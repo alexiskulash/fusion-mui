@@ -158,14 +158,17 @@ export default function UsersDataGrid() {
       width: 60,
       sortable: false,
       filterable: false,
-      renderCell: (params) => (
-        <Avatar
-          src={params.row.picture.thumbnail}
-          sx={{ width: 32, height: 32 }}
-        >
-          {params.row.name.first.charAt(0).toUpperCase()}
-        </Avatar>
-      ),
+      renderCell: (params) => {
+        if (!params?.row?.picture || !params?.row?.name?.first) return null;
+        return (
+          <Avatar
+            src={params.row.picture.thumbnail}
+            sx={{ width: 32, height: 32 }}
+          >
+            {params.row.name.first.charAt(0).toUpperCase()}
+          </Avatar>
+        );
+      },
     },
     {
       field: "fullName",
@@ -173,19 +176,24 @@ export default function UsersDataGrid() {
       flex: 1,
       minWidth: 200,
       sortable: false,
-      valueGetter: (params) =>
-        `${params.row.name.title} ${params.row.name.first} ${params.row.name.last}`,
-      renderCell: (params) => (
-        <Box>
-          <Typography variant="body2" fontWeight={500}>
-            {params.row.name.title} {params.row.name.first}{" "}
-            {params.row.name.last}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            @{params.row.login.username}
-          </Typography>
-        </Box>
-      ),
+      valueGetter: (params) => {
+        if (!params?.row?.name) return "";
+        return `${params.row.name.title} ${params.row.name.first} ${params.row.name.last}`;
+      },
+      renderCell: (params) => {
+        if (!params?.row?.name || !params?.row?.login) return null;
+        return (
+          <Box>
+            <Typography variant="body2" fontWeight={500}>
+              {params.row.name.title} {params.row.name.first}{" "}
+              {params.row.name.last}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              @{params.row.login.username}
+            </Typography>
+          </Box>
+        );
+      },
     },
     {
       field: "email",
@@ -199,14 +207,17 @@ export default function UsersDataGrid() {
       headerName: "Gender",
       width: 120,
       sortable: false,
-      renderCell: (params) => (
-        <Chip
-          label={params.value}
-          size="small"
-          color={getGenderColor(params.value)}
-          variant="outlined"
-        />
-      ),
+      renderCell: (params) => {
+        if (!params.value) return null;
+        return (
+          <Chip
+            label={params.value}
+            size="small"
+            color={getGenderColor(params.value)}
+            variant="outlined"
+          />
+        );
+      },
     },
     {
       field: "location",
@@ -214,18 +225,23 @@ export default function UsersDataGrid() {
       flex: 1,
       minWidth: 200,
       sortable: false,
-      valueGetter: (params) =>
-        `${params.row.location.city}, ${params.row.location.state}, ${params.row.location.country}`,
-      renderCell: (params) => (
-        <Box>
-          <Typography variant="body2">
-            {params.row.location.city}, {params.row.location.state}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            {params.row.location.country}
-          </Typography>
-        </Box>
-      ),
+      valueGetter: (params) => {
+        if (!params?.row?.location) return "";
+        return `${params.row.location.city}, ${params.row.location.state}, ${params.row.location.country}`;
+      },
+      renderCell: (params) => {
+        if (!params?.row?.location) return null;
+        return (
+          <Box>
+            <Typography variant="body2">
+              {params.row.location.city}, {params.row.location.state}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {params.row.location.country}
+            </Typography>
+          </Box>
+        );
+      },
     },
     {
       field: "phone",
@@ -238,17 +254,26 @@ export default function UsersDataGrid() {
       headerName: "Age",
       width: 80,
       sortable: false,
-      valueGetter: (params) => params.row.dob.age,
+      valueGetter: (params) => {
+        if (!params?.row?.dob) return 0;
+        return params.row.dob.age;
+      },
     },
     {
       field: "registered",
       headerName: "Registered",
       width: 120,
       sortable: false,
-      valueGetter: (params) => params.row.registered.date,
-      renderCell: (params) => (
-        <Typography variant="body2">{formatDate(params.value)}</Typography>
-      ),
+      valueGetter: (params) => {
+        if (!params?.row?.registered) return "";
+        return params.row.registered.date;
+      },
+      renderCell: (params) => {
+        if (!params.value) return null;
+        return (
+          <Typography variant="body2">{formatDate(params.value)}</Typography>
+        );
+      },
     },
     {
       field: "actions",
