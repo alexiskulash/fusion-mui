@@ -57,10 +57,25 @@ export default function UsersDataGrid() {
         sortBy: "name.first",
       });
 
-      // Add id field for DataGrid
+      // Add id field for DataGrid and ensure required fields exist
       const usersWithId = response.data.map((user) => ({
         ...user,
-        id: user.login.uuid,
+        id: user?.login?.uuid || `user-${Math.random()}`,
+        name: user?.name || { title: "", first: "", last: "" },
+        location: user?.location || {
+          city: "",
+          state: "",
+          country: "",
+          street: { name: "", number: 0 },
+        },
+        email: user?.email || "",
+        phone: user?.phone || "",
+        cell: user?.cell || "",
+        gender: user?.gender || "",
+        dob: user?.dob || { age: 0, date: "" },
+        registered: user?.registered || { date: "", age: 0 },
+        picture: user?.picture || { thumbnail: "", medium: "", large: "" },
+        login: user?.login || { uuid: "", username: "", password: "" },
       }));
 
       setUsers(usersWithId);
