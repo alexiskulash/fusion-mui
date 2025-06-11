@@ -20,7 +20,7 @@ import UsersDataGrid from "../components/UsersDataGrid";
  */
 export default function Customers() {
   return (
-    {/* Main container with responsive width constraints */}
+    // Main container with responsive width constraints
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
       {/* Page header */}
       <Typography variant="h4" component="h1" sx={{ mb: 4 }}>
