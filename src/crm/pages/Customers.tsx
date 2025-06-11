@@ -43,19 +43,27 @@ interface CustomersState {
 }
 
 export default function Customers() {
+  // Main component state containing all user data, pagination, search, and UI states
+  // This centralizes all the state management for the customer management page
   const [state, setState] = React.useState<CustomersState>({
-    users: [],
-    loading: false,
-    error: null,
-    total: 0,
-    page: 0,
-    pageSize: 25,
-    search: "",
-    searchValue: "",
+    users: [], // Array of user objects fetched from the API
+    loading: false, // Loading state for API operations
+    error: null, // Error message to display to user if API calls fail
+    total: 0, // Total number of users available (for pagination)
+    page: 0, // Current page index (0-based for DataGrid)
+    pageSize: 25, // Number of users to display per page
+    search: "", // Applied search query (what's actually being searched)
+    searchValue: "", // Current search input value (for debouncing)
   });
 
+  // State for controlling the edit user modal dialog
   const [editModalOpen, setEditModalOpen] = React.useState(false);
+
+  // Currently selected user for editing - null when no user is selected
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
+
+  // Snackbar state for showing success/error messages to the user
+  // Provides feedback for operations like save, delete, etc.
   const [snackbar, setSnackbar] = React.useState<{
     open: boolean;
     message: string;
@@ -66,8 +74,16 @@ export default function Customers() {
     severity: "success",
   });
 
+  // Reference to debounce timer for search functionality
+  // Prevents excessive API calls while user is typing in search field
   const debounceTimer = React.useRef<NodeJS.Timeout>();
 
+  /**
+   * Helper function to display snackbar notifications to the user
+   * Used for showing success messages after operations or error alerts
+   * @param message - The message to display in the snackbar
+   * @param severity - Type of message (success or error) which affects styling
+   */
   const showSnackbar = (
     message: string,
     severity: "success" | "error" = "success",
@@ -75,11 +91,19 @@ export default function Customers() {
     setSnackbar({ open: true, message, severity });
   };
 
+  /**
+   * Main function to load users from the API with pagination and search support
+   * Uses React.useCallback to prevent unnecessary re-renders and optimize performance
+   * Handles loading states, error states, and updates the component state with results
+   */
   const loadUsers = React.useCallback(
     async (params?: { page?: number; pageSize?: number; search?: string }) => {
+      // Set loading state and clear any previous errors before making API call
       setState((prev) => ({ ...prev, loading: true, error: null }));
 
       try {
+        // Call the Users API with pagination and search parameters
+        // Note: API uses 1-based pagination while DataGrid uses 0-based, so we add 1
         const response = await usersApi.getUsers({
           page: (params?.page ?? state.page) + 1, // API is 1-indexed
           perPage: params?.pageSize ?? state.pageSize,
