@@ -295,26 +295,31 @@ export default function UsersDataGrid() {
       type: "actions",
       headerName: "Actions",
       width: 120,
-      getActions: (params) => [
-        <GridActionsCellItem
-          icon={
-            <Tooltip title="Edit User">
-              <EditIcon />
-            </Tooltip>
-          }
-          label="Edit"
-          onClick={() => handleEditUser(params.row)}
-        />,
-        <GridActionsCellItem
-          icon={
-            <Tooltip title="Delete User">
-              <DeleteIcon />
-            </Tooltip>
-          }
-          label="Delete"
-          onClick={() => handleDeleteUser(params.row)}
-        />,
-      ],
+      getActions: (params) => {
+        if (!params?.row) return [];
+        return [
+          <GridActionsCellItem
+            key="edit"
+            icon={
+              <Tooltip title="Edit User">
+                <EditIcon />
+              </Tooltip>
+            }
+            label="Edit"
+            onClick={() => handleEditUser(params.row)}
+          />,
+          <GridActionsCellItem
+            key="delete"
+            icon={
+              <Tooltip title="Delete User">
+                <DeleteIcon />
+              </Tooltip>
+            }
+            label="Delete"
+            onClick={() => handleDeleteUser(params.row)}
+          />,
+        ];
+      },
     },
   ];
 
