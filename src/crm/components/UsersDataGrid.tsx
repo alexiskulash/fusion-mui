@@ -360,7 +360,7 @@ export default function UsersDataGrid() {
 
       <Box sx={{ flexGrow: 1, p: 2, pt: 0 }}>
         <DataGrid
-          rows={users}
+          rows={users || []}
           columns={columns}
           loading={loading}
           paginationModel={paginationModel}
@@ -372,7 +372,7 @@ export default function UsersDataGrid() {
           disableColumnMenu
           disableRowSelectionOnClick
           getRowClassName={(params) =>
-            params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
+            params?.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
           }
           sx={{
             border: "none",
@@ -386,6 +386,22 @@ export default function UsersDataGrid() {
             "& .MuiDataGrid-row.even": {
               backgroundColor: "grey.50",
             },
+          }}
+          slots={{
+            noRowsOverlay: () => (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "100%",
+                }}
+              >
+                <Typography variant="body2" color="text.secondary">
+                  {loading ? "Loading users..." : "No users found"}
+                </Typography>
+              </Box>
+            ),
           }}
         />
       </Box>
