@@ -61,19 +61,38 @@ export default function UserDataGrid({
   onRefresh,
   pageSize,
 }: UserDataGridProps) {
+  // Local state for managing search input value before submission
+  // This allows users to type without triggering immediate API calls
   const [searchTerm, setSearchTerm] = React.useState("");
+
+  // Local state for tracking the current sort field selection
+  // Defaults to sorting by first name for consistent user experience
   const [sortBy, setSortBy] = React.useState("name.first");
 
+  /**
+   * Handles search form submission when user presses Enter or clicks search
+   * Prevents default form submission behavior and triggers parent search callback
+   * @param e - Form submission event
+   */
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(searchTerm);
   };
 
+  /**
+   * Handles changes to the sort dropdown selection
+   * Updates both local state and triggers parent sort callback
+   * @param newSort - The new sort field value (e.g., 'name.first', 'dob.age')
+   */
   const handleSortChange = (newSort: string) => {
     setSortBy(newSort);
     onSortChange(newSort);
   };
 
+  /**
+   * DataGrid column definitions with custom renderers for user data display
+   * Each column defines how user information is formatted and presented
+   */
   const columns: GridColDef[] = [
     {
       field: "avatar",
