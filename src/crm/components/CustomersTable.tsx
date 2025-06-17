@@ -187,8 +187,8 @@ export default function CustomersTable({
     {
       field: "customer",
       headerName: "Customer",
-      flex: 1.5,
-      minWidth: 250,
+      flex: 1.2,
+      minWidth: 200,
       renderCell: (params) => {
         const customer = params.row as Customer;
         return (
@@ -203,11 +203,22 @@ export default function CustomersTable({
               <Typography variant="body2" fontWeight={500}>
                 {customer.name.title} {customer.name.first} {customer.name.last}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
-                @{customer.login.username}
-              </Typography>
             </Box>
           </Stack>
+        );
+      },
+    },
+    {
+      field: "username",
+      headerName: "Username",
+      flex: 0.8,
+      minWidth: 120,
+      renderCell: (params) => {
+        const customer = params.row as Customer;
+        return (
+          <Typography variant="body2" color="text.secondary">
+            @{customer.login.username}
+          </Typography>
         );
       },
     },
