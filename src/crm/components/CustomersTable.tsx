@@ -187,7 +187,8 @@ export default function CustomersTable({
     {
       field: "customer",
       headerName: "Customer",
-      width: 250,
+      flex: 1.5,
+      minWidth: 250,
       renderCell: (params) => {
         const customer = params.row as Customer;
         return (
@@ -213,7 +214,8 @@ export default function CustomersTable({
     {
       field: "email",
       headerName: "Email",
-      width: 200,
+      flex: 1.2,
+      minWidth: 200,
       renderCell: (params) => (
         <Box>
           <Typography variant="body2">{params.value}</Typography>
@@ -223,7 +225,8 @@ export default function CustomersTable({
     {
       field: "location",
       headerName: "Location",
-      width: 180,
+      flex: 1,
+      minWidth: 180,
       renderCell: (params) => {
         const customer = params.row as Customer;
         return (
@@ -236,7 +239,8 @@ export default function CustomersTable({
     {
       field: "age",
       headerName: "Age",
-      width: 80,
+      flex: 0.3,
+      minWidth: 80,
       renderCell: (params) => {
         const customer = params.row as Customer;
         return (
@@ -252,7 +256,8 @@ export default function CustomersTable({
     {
       field: "phone",
       headerName: "Phone",
-      width: 150,
+      flex: 0.8,
+      minWidth: 150,
       renderCell: (params) => (
         <Typography variant="body2">{params.value}</Typography>
       ),
@@ -260,7 +265,8 @@ export default function CustomersTable({
     {
       field: "registered",
       headerName: "Joined Date",
-      width: 120,
+      flex: 0.6,
+      minWidth: 120,
       renderCell: (params) => {
         const customer = params.row as Customer;
         return (
@@ -274,7 +280,8 @@ export default function CustomersTable({
       field: "actions",
       type: "actions",
       headerName: "Actions",
-      width: 150,
+      flex: 0.8,
+      minWidth: 150,
       getActions: (params: GridRowParams) => {
         const customer = params.row as Customer;
         return [
