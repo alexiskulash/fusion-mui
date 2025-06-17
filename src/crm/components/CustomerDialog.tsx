@@ -297,9 +297,9 @@ export default function CustomerDialog({
 
           {/* Account Information */}
           <Grid item xs={12} sx={{ mt: 2 }}>
-            <Box sx={{ mb: 2 }}>
-              <strong>Account Information</strong>
-            </Box>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
+              Account Information
+            </Typography>
           </Grid>
 
           <Grid item xs={12} sm={6}>
