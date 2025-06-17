@@ -350,9 +350,30 @@ export default function CustomersTable({
       >
         <CardContent sx={{ p: 0, height: "100%", width: "100%" }}>
           <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
-            <Typography variant="h6" component="h3">
-              Customer Directory
-            </Typography>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              spacing={2}
+            >
+              <Typography variant="h6" component="h3">
+                Customer Directory
+              </Typography>
+              <TextField
+                placeholder="Search customers..."
+                value={searchTerm}
+                onChange={(e) => onSearchChange(e.target.value)}
+                size="small"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchRoundedIcon fontSize="small" />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ minWidth: 250 }}
+              />
+            </Stack>
           </Box>
           <Box sx={{ height: "calc(100% - 60px)", width: "100%" }}>
             <DataGrid
