@@ -106,13 +106,13 @@ export default function CrmMainDashboard() {
 
       {/* Charts row */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={4} sx={{ display: "flex" }}>
           <CrmSalesChart />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={4} sx={{ display: "flex" }}>
           <CrmUpcomingTasksChart />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={4} sx={{ display: "flex" }}>
           <CrmLeadsBySourceChart />
         </Grid>
       </Grid>
