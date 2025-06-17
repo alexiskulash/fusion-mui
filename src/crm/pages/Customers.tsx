@@ -148,6 +148,7 @@ export default function Customers() {
         searchTerm={searchTerm}
         refreshTrigger={refreshTable}
         onCustomerUpdate={() => setRefreshTable((prev) => prev + 1)}
+        onSearchChange={setSearchTerm}
       />
 
       {/* Add Customer Dialog */}
