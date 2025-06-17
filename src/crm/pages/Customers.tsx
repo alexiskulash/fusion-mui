@@ -144,15 +144,11 @@ export default function Customers() {
       </Grid>
 
       {/* Customers Table */}
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <CustomersTable
-            searchTerm={searchTerm}
-            refreshTrigger={refreshTable}
-            onCustomerUpdate={() => setRefreshTable((prev) => prev + 1)}
-          />
-        </Grid>
-      </Grid>
+      <CustomersTable
+        searchTerm={searchTerm}
+        refreshTrigger={refreshTable}
+        onCustomerUpdate={() => setRefreshTable((prev) => prev + 1)}
+      />
 
       {/* Add Customer Dialog */}
       <CustomerDialog
