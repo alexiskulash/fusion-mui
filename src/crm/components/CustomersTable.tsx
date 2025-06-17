@@ -279,7 +279,9 @@ export default function CustomersTable({
       flex: 0.8,
       minWidth: 150,
       renderCell: (params) => (
-        <Typography variant="body2">{params.value}</Typography>
+        <Box sx={{ display: "flex", alignItems: "center", height: "100%" }}>
+          <Typography variant="body2">{params.value}</Typography>
+        </Box>
       ),
     },
     {
@@ -290,9 +292,11 @@ export default function CustomersTable({
       renderCell: (params) => {
         const customer = params.row as Customer;
         return (
-          <Typography variant="body2">
-            {formatDate(customer.registered.date)}
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", height: "100%" }}>
+            <Typography variant="body2">
+              {formatDate(customer.registered.date)}
+            </Typography>
+          </Box>
         );
       },
     },
