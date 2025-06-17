@@ -17,10 +17,13 @@ import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
 import PhoneRoundedIcon from "@mui/icons-material/PhoneRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import CustomerDialog from "./CustomerDialog";
 
 interface Customer {
