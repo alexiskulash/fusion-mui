@@ -317,8 +317,15 @@ export default function CustomersTable({
 
   return (
     <>
-      <Card variant="outlined" sx={{ height: 600 }}>
-        <CardContent sx={{ p: 0, height: "100%" }}>
+      <Card
+        variant="outlined"
+        sx={{
+          height: 600,
+          width: "100%",
+          maxWidth: "none",
+        }}
+      >
+        <CardContent sx={{ p: 0, height: "100%", width: "100%" }}>
           <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
             <Typography variant="h6" component="h3">
               Customer Directory
@@ -338,11 +345,18 @@ export default function CustomersTable({
               disableRowSelectionOnClick
               sx={{
                 border: 0,
+                width: "100%",
                 "& .MuiDataGrid-cell:focus": {
                   outline: "none",
                 },
                 "& .MuiDataGrid-row:hover": {
                   backgroundColor: "action.hover",
+                },
+                "& .MuiDataGrid-main": {
+                  width: "100%",
+                },
+                "& .MuiDataGrid-root": {
+                  width: "100%",
                 },
               }}
             />
