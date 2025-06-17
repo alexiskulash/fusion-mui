@@ -1,20 +1,24 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Grid from "@mui/material/Grid";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import Alert from "@mui/material/Alert";
-import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Alert,
+  CircularProgress,
+  Typography,
+  Divider,
+  Paper,
+  Stack,
+} from "@mui/material";
 
 interface Customer {
   id?: string;
@@ -62,9 +66,35 @@ interface CustomerDialogProps {
   customer?: Customer;
 }
 
+interface FormData {
+  email: string;
+  login: {
+    username: string;
+    password: string;
+  };
+  name: {
+    title: string;
+    first: string;
+    last: string;
+  };
+  gender: string;
+  location: {
+    street: {
+      number: number;
+      name: string;
+    };
+    city: string;
+    state: string;
+    country: string;
+    postcode: string;
+  };
+  phone: string;
+  cell: string;
+}
+
 const API_BASE_URL = "https://user-api.builder-io.workers.dev/api";
 
-const initialFormData = {
+const initialFormData: FormData = {
   email: "",
   login: {
     username: "",
@@ -90,6 +120,18 @@ const initialFormData = {
   cell: "",
 };
 
+const titleOptions = [
+  { value: "Mr", label: "Mr" },
+  { value: "Mrs", label: "Mrs" },
+  { value: "Ms", label: "Ms" },
+  { value: "Dr", label: "Dr" },
+];
+
+const genderOptions = [
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
+];
+
 export default function CustomerDialog({
   open,
   onClose,
@@ -97,7 +139,7 @@ export default function CustomerDialog({
   mode,
   customer,
 }: CustomerDialogProps) {
-  const [formData, setFormData] = useState(initialFormData);
+  const [formData, setFormData] = useState<FormData>(initialFormData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -107,7 +149,7 @@ export default function CustomerDialog({
         email: customer.email,
         login: {
           username: customer.login.username,
-          password: "", // Don't populate password for edit
+          password: "",
         },
         name: {
           title: customer.name.title,
@@ -134,36 +176,42 @@ export default function CustomerDialog({
     setError(null);
   }, [mode, customer, open]);
 
-  const handleInputChange = (path: string, value: any) => {
-    setFormData((prev) => {
-      const newData = { ...prev };
-      const keys = path.split(".");
-      let current: any = newData;
+  const handleChange =
+    (field: string) =>
+    (
+      event:
+        | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        | { target: { value: unknown } },
+    ) => {
+      const value = event.target.value;
+      const keys = field.split(".");
 
-      for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) {
-          current[keys[i]] = {};
+      setFormData((prev) => {
+        const newData = { ...prev };
+        let current: any = newData;
+
+        for (let i = 0; i < keys.length - 1; i++) {
+          current = current[keys[i]];
         }
-        current = current[keys[i]];
-      }
 
-      current[keys[keys.length - 1]] = value;
-      return newData;
-    });
-  };
+        current[keys[keys.length - 1]] = value;
+        return newData;
+      });
+    };
 
-  const validateForm = () => {
-    if (!formData.email) return "Email is required";
-    if (!formData.login.username) return "Username is required";
-    if (!formData.name.first) return "First name is required";
-    if (!formData.name.last) return "Last name is required";
-    if (mode === "create" && !formData.login.password)
+  const validateForm = (): string | null => {
+    if (!formData.email.trim()) return "Email is required";
+    if (!formData.login.username.trim()) return "Username is required";
+    if (!formData.name.first.trim()) return "First name is required";
+    if (!formData.name.last.trim()) return "Last name is required";
+    if (mode === "create" && !formData.login.password.trim()) {
       return "Password is required";
+    }
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email))
+    if (!emailRegex.test(formData.email)) {
       return "Please enter a valid email address";
+    }
 
     return null;
   };
@@ -186,10 +234,9 @@ export default function CustomerDialog({
 
       const method = mode === "create" ? "POST" : "PUT";
 
-      // For edit mode, remove password if it's empty
       const submitData = { ...formData };
-      if (mode === "edit" && !submitData.login.password) {
-        delete submitData.login.password;
+      if (mode === "edit" && !submitData.login.password.trim()) {
+        delete (submitData.login as any).password;
       }
 
       const response = await fetch(url, {
@@ -222,242 +269,239 @@ export default function CustomerDialog({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>
-        {mode === "create" ? "Add New Customer" : "Edit Customer"}
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: { borderRadius: 2 },
+      }}
+    >
+      <DialogTitle sx={{ pb: 1 }}>
+        <Typography variant="h5" component="h2" fontWeight={600}>
+          {mode === "create" ? "Add New Customer" : "Edit Customer"}
+        </Typography>
       </DialogTitle>
 
-      <DialogContent>
+      <DialogContent dividers sx={{ px: 3, py: 2 }}>
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert severity="error" sx={{ mb: 3 }}>
             {error}
           </Alert>
         )}
 
-        <Grid container spacing={2} sx={{ mt: 1 }}>
-          {/* Personal Information */}
-          <Grid item xs={12}>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
+        <Stack spacing={3}>
+          {/* Personal Information Section */}
+          <Paper variant="outlined" sx={{ p: 2 }}>
+            <Typography variant="h6" color="primary" gutterBottom>
               Personal Information
             </Typography>
-          </Grid>
+            <Divider sx={{ mb: 2 }} />
 
-          <Grid item xs={12} sm={3}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Title</InputLabel>
-              <Select
-                value={formData.name.title}
-                label="Title"
-                onChange={(e) =>
-                  handleInputChange("name.title", e.target.value)
-                }
-              >
-                <MenuItem value="Mr">Mr</MenuItem>
-                <MenuItem value="Mrs">Mrs</MenuItem>
-                <MenuItem value="Ms">Ms</MenuItem>
-                <MenuItem value="Dr">Dr</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={2}>
+                <FormControl fullWidth>
+                  <InputLabel>Title</InputLabel>
+                  <Select
+                    value={formData.name.title}
+                    label="Title"
+                    onChange={handleChange("name.title")}
+                  >
+                    {titleOptions.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
 
-          <Grid item xs={12} sm={4.5}>
-            <TextField
-              fullWidth
-              size="small"
-              label="First Name"
-              value={formData.name.first}
-              onChange={(e) => handleInputChange("name.first", e.target.value)}
-              required
-            />
-          </Grid>
+              <Grid item xs={12} sm={5}>
+                <TextField
+                  fullWidth
+                  label="First Name"
+                  value={formData.name.first}
+                  onChange={handleChange("name.first")}
+                  required
+                />
+              </Grid>
 
-          <Grid item xs={12} sm={4.5}>
-            <TextField
-              fullWidth
-              size="small"
-              label="Last Name"
-              value={formData.name.last}
-              onChange={(e) => handleInputChange("name.last", e.target.value)}
-              required
-            />
-          </Grid>
+              <Grid item xs={12} sm={5}>
+                <TextField
+                  fullWidth
+                  label="Last Name"
+                  value={formData.name.last}
+                  onChange={handleChange("name.last")}
+                  required
+                />
+              </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Gender</InputLabel>
-              <Select
-                value={formData.gender}
-                label="Gender"
-                onChange={(e) => handleInputChange("gender", e.target.value)}
-              >
-                <MenuItem value="male">Male</MenuItem>
-                <MenuItem value="female">Female</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Gender</InputLabel>
+                  <Select
+                    value={formData.gender}
+                    label="Gender"
+                    onChange={handleChange("gender")}
+                  >
+                    {genderOptions.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Paper>
 
-          {/* Account Information */}
-          <Grid item xs={12} sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
+          {/* Account Information Section */}
+          <Paper variant="outlined" sx={{ p: 2 }}>
+            <Typography variant="h6" color="primary" gutterBottom>
               Account Information
             </Typography>
-          </Grid>
+            <Divider sx={{ mb: 2 }} />
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              size="small"
-              label="Email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => handleInputChange("email", e.target.value)}
-              required
-            />
-          </Grid>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Email Address"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange("email")}
+                  required
+                />
+              </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              size="small"
-              label="Username"
-              value={formData.login.username}
-              onChange={(e) =>
-                handleInputChange("login.username", e.target.value)
-              }
-              required
-            />
-          </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Username"
+                  value={formData.login.username}
+                  onChange={handleChange("login.username")}
+                  required
+                />
+              </Grid>
 
-          {mode === "create" && (
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                size="small"
-                label="Password"
-                type="password"
-                value={formData.login.password}
-                onChange={(e) =>
-                  handleInputChange("login.password", e.target.value)
-                }
-                required={mode === "create"}
-              />
+              {mode === "create" && (
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Password"
+                    type="password"
+                    value={formData.login.password}
+                    onChange={handleChange("login.password")}
+                    required
+                  />
+                </Grid>
+              )}
             </Grid>
-          )}
+          </Paper>
 
-          {/* Contact Information */}
-          <Grid item xs={12} sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
+          {/* Contact Information Section */}
+          <Paper variant="outlined" sx={{ p: 2 }}>
+            <Typography variant="h6" color="primary" gutterBottom>
               Contact Information
             </Typography>
-          </Grid>
+            <Divider sx={{ mb: 2 }} />
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              size="small"
-              label="Phone"
-              value={formData.phone}
-              onChange={(e) => handleInputChange("phone", e.target.value)}
-            />
-          </Grid>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Primary Phone"
+                  value={formData.phone}
+                  onChange={handleChange("phone")}
+                />
+              </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              size="small"
-              label="Cell Phone"
-              value={formData.cell}
-              onChange={(e) => handleInputChange("cell", e.target.value)}
-            />
-          </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Mobile Phone"
+                  value={formData.cell}
+                  onChange={handleChange("cell")}
+                />
+              </Grid>
+            </Grid>
+          </Paper>
 
-          {/* Address Information */}
-          <Grid item xs={12} sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
+          {/* Address Information Section */}
+          <Paper variant="outlined" sx={{ p: 2 }}>
+            <Typography variant="h6" color="primary" gutterBottom>
               Address Information
             </Typography>
-          </Grid>
+            <Divider sx={{ mb: 2 }} />
 
-          <Grid item xs={12} sm={3}>
-            <TextField
-              fullWidth
-              size="small"
-              label="Street Number"
-              type="number"
-              value={formData.location.street.number}
-              onChange={(e) =>
-                handleInputChange(
-                  "location.street.number",
-                  parseInt(e.target.value) || 0,
-                )
-              }
-            />
-          </Grid>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={2}>
+                <TextField
+                  fullWidth
+                  label="Number"
+                  type="number"
+                  value={formData.location.street.number || ""}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value) || 0;
+                    handleChange("location.street.number")({
+                      target: { value },
+                    });
+                  }}
+                />
+              </Grid>
 
-          <Grid item xs={12} sm={9}>
-            <TextField
-              fullWidth
-              size="small"
-              label="Street Name"
-              value={formData.location.street.name}
-              onChange={(e) =>
-                handleInputChange("location.street.name", e.target.value)
-              }
-            />
-          </Grid>
+              <Grid item xs={12} sm={10}>
+                <TextField
+                  fullWidth
+                  label="Street Name"
+                  value={formData.location.street.name}
+                  onChange={handleChange("location.street.name")}
+                />
+              </Grid>
 
-          <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              size="small"
-              label="City"
-              value={formData.location.city}
-              onChange={(e) =>
-                handleInputChange("location.city", e.target.value)
-              }
-            />
-          </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  fullWidth
+                  label="City"
+                  value={formData.location.city}
+                  onChange={handleChange("location.city")}
+                />
+              </Grid>
 
-          <Grid item xs={12} sm={3}>
-            <TextField
-              fullWidth
-              size="small"
-              label="State"
-              value={formData.location.state}
-              onChange={(e) =>
-                handleInputChange("location.state", e.target.value)
-              }
-            />
-          </Grid>
+              <Grid item xs={12} sm={3}>
+                <TextField
+                  fullWidth
+                  label="State/Province"
+                  value={formData.location.state}
+                  onChange={handleChange("location.state")}
+                />
+              </Grid>
 
-          <Grid item xs={12} sm={3}>
-            <TextField
-              fullWidth
-              size="small"
-              label="Country"
-              value={formData.location.country}
-              onChange={(e) =>
-                handleInputChange("location.country", e.target.value)
-              }
-            />
-          </Grid>
+              <Grid item xs={12} sm={3}>
+                <TextField
+                  fullWidth
+                  label="Country"
+                  value={formData.location.country}
+                  onChange={handleChange("location.country")}
+                />
+              </Grid>
 
-          <Grid item xs={12} sm={2}>
-            <TextField
-              fullWidth
-              size="small"
-              label="Postal Code"
-              value={formData.location.postcode}
-              onChange={(e) =>
-                handleInputChange("location.postcode", e.target.value)
-              }
-            />
-          </Grid>
-        </Grid>
+              <Grid item xs={12} sm={2}>
+                <TextField
+                  fullWidth
+                  label="Postal Code"
+                  value={formData.location.postcode}
+                  onChange={handleChange("location.postcode")}
+                />
+              </Grid>
+            </Grid>
+          </Paper>
+        </Stack>
       </DialogContent>
 
-      <DialogActions>
-        <Button onClick={handleClose} disabled={loading}>
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        <Button onClick={handleClose} disabled={loading} variant="outlined">
           Cancel
         </Button>
         <Button
