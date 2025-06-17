@@ -72,6 +72,7 @@ export default function CustomersTable({
   searchTerm,
   refreshTrigger,
   onCustomerUpdate,
+  onSearchChange,
 }: CustomersTableProps) {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
