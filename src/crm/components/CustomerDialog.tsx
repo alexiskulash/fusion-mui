@@ -372,8 +372,8 @@ export default function CustomerDialog({
           </Grid>
 
           {/* Address Information */}
-          <Grid item xs={12} sx={{ mt: 3, mb: 0 }}>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
+          <Grid item xs={12} sx={{ mt: 2 }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
               Address Information
             </Typography>
           </Grid>
