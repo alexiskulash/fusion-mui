@@ -63,6 +63,7 @@ interface CustomersTableProps {
   searchTerm: string;
   refreshTrigger: number;
   onCustomerUpdate: () => void;
+  onSearchChange: (term: string) => void;
 }
 
 const API_BASE_URL = "https://user-api.builder-io.workers.dev/api";
