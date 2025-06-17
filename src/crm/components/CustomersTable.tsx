@@ -221,9 +221,11 @@ export default function CustomersTable({
       renderCell: (params) => {
         const customer = params.row as Customer;
         return (
-          <Typography variant="body2" color="text.secondary">
-            @{customer.login.username}
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", height: "100%" }}>
+            <Typography variant="body2" color="text.secondary">
+              @{customer.login.username}
+            </Typography>
+          </Box>
         );
       },
     },
@@ -233,7 +235,7 @@ export default function CustomersTable({
       flex: 1.2,
       minWidth: 200,
       renderCell: (params) => (
-        <Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: "100%" }}>
           <Typography variant="body2">{params.value}</Typography>
         </Box>
       ),
@@ -246,9 +248,11 @@ export default function CustomersTable({
       renderCell: (params) => {
         const customer = params.row as Customer;
         return (
-          <Typography variant="body2">
-            {customer.location.city}, {customer.location.state}
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", height: "100%" }}>
+            <Typography variant="body2">
+              {customer.location.city}, {customer.location.state}
+            </Typography>
+          </Box>
         );
       },
     },
