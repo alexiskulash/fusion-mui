@@ -297,8 +297,8 @@ export default function CustomerDialog({
           </Grid>
 
           {/* Account Information */}
-          <Grid item xs={12} sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
+          <Grid item xs={12} sx={{ mt: 3, mb: 0 }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
               Account Information
             </Typography>
           </Grid>
@@ -345,8 +345,8 @@ export default function CustomerDialog({
           )}
 
           {/* Contact Information */}
-          <Grid item xs={12} sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
+          <Grid item xs={12} sx={{ mt: 3, mb: 0 }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
               Contact Information
             </Typography>
           </Grid>
@@ -372,8 +372,8 @@ export default function CustomerDialog({
           </Grid>
 
           {/* Address Information */}
-          <Grid item xs={12} sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
+          <Grid item xs={12} sx={{ mt: 3, mb: 0 }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
               Address Information
             </Typography>
           </Grid>
