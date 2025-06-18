@@ -23,6 +23,7 @@ export default function CrmLeadsBySourceChart() {
       variant="outlined"
       sx={{
         height: "100%",
+        width: "100%",
         display: "flex",
         flexDirection: "column",
       }}

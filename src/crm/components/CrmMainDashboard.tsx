@@ -9,6 +9,7 @@ import Copyright from "../../dashboard/internals/components/Copyright";
 import CrmStatCard from "./CrmStatCard";
 import CrmRecentDealsTable from "./CrmRecentDealsTable";
 import CrmUpcomingTasks from "./CrmUpcomingTasks";
+import CrmUpcomingTasksChart from "./CrmUpcomingTasksChart";
 import CrmSalesChart from "./CrmSalesChart";
 import CrmLeadsBySourceChart from "./CrmLeadsBySourceChart";
 
@@ -105,10 +106,13 @@ export default function CrmMainDashboard() {
 
       {/* Charts row */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={4} sx={{ display: "flex" }}>
           <CrmSalesChart />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={4} sx={{ display: "flex" }}>
+          <CrmUpcomingTasksChart />
+        </Grid>
+        <Grid item xs={12} md={4} sx={{ display: "flex" }}>
           <CrmLeadsBySourceChart />
         </Grid>
       </Grid>
