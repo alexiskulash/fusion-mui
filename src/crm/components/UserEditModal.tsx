@@ -63,13 +63,26 @@ export default function UserEditModal({
   user,
   onUserUpdated,
 }: UserEditModalProps) {
+  // Component state management for form data and UI states
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  /**
+   * Effect to populate form data when modal opens or user data changes
+   * This ensures the form is always in sync with the selected user's data
+   *
+   * Key behaviors:
+   * - When a user is provided, map their API data structure to our flat form structure
+   * - When no user is provided (new user scenario), reset to initial empty state
+   * - Clear any previous error/success states when modal opens/user changes
+   * - Uses optional chaining (?.) to safely access nested properties that might be undefined
+   */
   useEffect(() => {
     if (user) {
+      // Transform the nested User API structure into a flat form structure
+      // This makes it easier to work with form inputs and validation
       setFormData({
         firstName: user.name.first || "",
         lastName: user.name.last || "",
@@ -79,6 +92,7 @@ export default function UserEditModal({
         gender: user.gender || "male",
         phone: user.phone || "",
         cell: user.cell || "",
+        // Handle nested street address structure with safe property access
         streetNumber: user.location.street?.number?.toString() || "",
         streetName: user.location.street?.name || "",
         city: user.location.city || "",
@@ -87,17 +101,33 @@ export default function UserEditModal({
         postcode: user.location.postcode || "",
       });
     } else {
+      // Reset to empty form when no user is selected (for new user creation)
       setFormData(initialFormData);
     }
+
+    // Reset error and success states whenever the modal opens or user changes
+    // This prevents stale messages from previous operations
     setError(null);
     setSuccess(false);
-  }, [user, open]);
+  }, [user, open]); // Dependencies: re-run when user data or modal open state changes
 
+  /**
+   * Higher-order function that creates input change handlers for specific form fields
+   *
+   * This pattern allows us to:
+   * - Create reusable change handlers for any form field
+   * - Maintain type safety with TypeScript
+   * - Use the same handler pattern across all form inputs
+   *
+   * @param field - The form field name (must be a key of FormData)
+   * @returns A function that handles the input change event
+   */
   const handleInputChange =
     (field: keyof FormData) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      // Update only the specific field while preserving all other form data
       setFormData((prev) => ({
-        ...prev,
-        [field]: event.target.value,
+        ...prev, // Spread operator to keep all existing form data
+        [field]: event.target.value, // Update only the changed field
       }));
     };
 
