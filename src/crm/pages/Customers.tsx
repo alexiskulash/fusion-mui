@@ -173,8 +173,8 @@ export default function Customers() {
       filterable: false,
       renderCell: (params) => (
         <Avatar
-          src={params.row.picture?.thumbnail}
-          alt={`${params.row.name?.first} ${params.row.name?.last}`}
+          src={params.row?.picture?.thumbnail}
+          alt={`${params.row?.name?.first || ""} ${params.row?.name?.last || ""}`}
           sx={{ width: 32, height: 32 }}
         />
       ),
@@ -183,8 +183,10 @@ export default function Customers() {
       field: "fullName",
       headerName: "Name",
       width: 200,
-      valueGetter: (params) =>
-        `${params.row.name?.title || ""} ${params.row.name?.first || ""} ${params.row.name?.last || ""}`.trim(),
+      valueGetter: (params) => {
+        if (!params?.row?.name) return "";
+        return `${params.row.name.title || ""} ${params.row.name.first || ""} ${params.row.name.last || ""}`.trim();
+      },
     },
     {
       field: "email",
@@ -195,14 +197,16 @@ export default function Customers() {
       field: "username",
       headerName: "Username",
       width: 150,
-      valueGetter: (params) => params.row.login?.username,
+      valueGetter: (params) => params?.row?.login?.username || "",
     },
     {
       field: "location",
       headerName: "Location",
       width: 200,
-      valueGetter: (params) =>
-        `${params.row.location?.city || ""}, ${params.row.location?.country || ""}`,
+      valueGetter: (params) => {
+        if (!params?.row?.location) return "";
+        return `${params.row.location.city || ""}, ${params.row.location.country || ""}`;
+      },
     },
     {
       field: "phone",
@@ -213,7 +217,7 @@ export default function Customers() {
       field: "age",
       headerName: "Age",
       width: 80,
-      valueGetter: (params) => params.row.dob?.age,
+      valueGetter: (params) => params?.row?.dob?.age || "",
     },
     {
       field: "gender",
@@ -221,7 +225,7 @@ export default function Customers() {
       width: 100,
       renderCell: (params) => (
         <Chip
-          label={params.value}
+          label={params.value || "Unknown"}
           size="small"
           color={params.value === "male" ? "primary" : "secondary"}
           variant="outlined"
@@ -233,18 +237,23 @@ export default function Customers() {
       type: "actions",
       headerName: "Actions",
       width: 100,
-      getActions: (params) => [
-        <GridActionsCellItem
-          icon={<EditIcon />}
-          label="Edit"
-          onClick={() => handleEditUser(params.row)}
-        />,
-        <GridActionsCellItem
-          icon={<MoreVertIcon />}
-          label="More"
-          onClick={(event) => handleMenuOpen(event, params.row.login.uuid)}
-        />,
-      ],
+      getActions: (params) => {
+        if (!params?.row) return [];
+        return [
+          <GridActionsCellItem
+            icon={<EditIcon />}
+            label="Edit"
+            onClick={() => handleEditUser(params.row)}
+          />,
+          <GridActionsCellItem
+            icon={<MoreVertIcon />}
+            label="More"
+            onClick={(event) =>
+              handleMenuOpen(event, params.row.login?.uuid || "")
+            }
+          />,
+        ];
+      },
     },
   ];
 
