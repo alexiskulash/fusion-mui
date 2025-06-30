@@ -49,8 +49,15 @@ export default function UserEditModal({
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
+  /**
+   * Effect to populate form fields when a user is selected for editing
+   * Transforms the nested User object structure into a flat form data object
+   * for easier form handling and input binding. This runs whenever the user prop changes.
+   */
   React.useEffect(() => {
     if (user) {
+      // Transform complex nested user object into simplified form structure
+      // Each field is safely accessed with optional chaining and fallback to empty string
       setFormData({
         firstName: user.name.first || "",
         lastName: user.name.last || "",
@@ -64,27 +71,43 @@ export default function UserEditModal({
         state: user.location.state || "",
         country: user.location.country || "",
         postcode: user.location.postcode || "",
+        // Convert number to string for text input compatibility
         streetNumber: user.location.street?.number?.toString() || "",
         streetName: user.location.street?.name || "",
       });
     }
   }, [user]);
 
+  /**
+   * Higher-order function that creates field-specific change handlers
+   * This pattern allows us to create reusable input handlers for each form field
+   * Returns a function that updates the specified field in the form data state
+   */
   const handleInputChange =
     (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      // Update only the specific field while preserving all other form data
       setFormData((prev) => ({
         ...prev,
         [field]: event.target.value,
       }));
     };
 
+  /**
+   * Handles form submission when user clicks "Save Changes"
+   * Transforms the flat form data structure back into the nested API format
+   * and sends the update request to the backend API
+   */
   const handleSubmit = async () => {
+    // Safety check - ensure we have a user to update
     if (!user) return;
 
+    // Start loading state to show progress indicator and disable form
     setLoading(true);
     setError(null);
 
     try {
+      // Transform flat form data back into the nested structure expected by the API
+      // This reverses the flattening done in the useEffect above
       const updateData = {
         name: {
           first: formData.firstName,
@@ -104,31 +127,48 @@ export default function UserEditModal({
           country: formData.country,
           postcode: formData.postcode,
           street: {
+            // Parse string input back to number, with fallback for invalid input
             number: parseInt(formData.streetNumber) || 0,
             name: formData.streetName,
           },
         },
       };
 
+      // Send update request to API using the user's UUID as identifier
       await usersApi.updateUser(user.login.uuid, updateData);
+
+      // Notify parent component to refresh the users list
       onUserUpdated();
+
+      // Close modal after successful update
       onClose();
     } catch (err) {
+      // Capture and display any API errors to the user
       setError(err instanceof Error ? err.message : "Failed to update user");
     } finally {
+      // Always reset loading state regardless of success or failure
       setLoading(false);
     }
   };
 
+  /**
+   * Handles modal close with proper cleanup
+   * Ensures any error state is cleared before closing to prevent
+   * stale error messages from appearing when modal reopens
+   */
   const handleClose = () => {
+    // Clear any existing error messages for clean state on next open
     setError(null);
+    // Delegate to parent component's close handler
     onClose();
   };
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      {/* Dialog header with user context for better UX */}
       <DialogTitle>
         <Box display="flex" alignItems="center" gap={2}>
+          {/* Display user avatar when available for visual identification */}
           {user && (
             <Avatar
               src={user.picture.medium}
@@ -142,6 +182,7 @@ export default function UserEditModal({
       </DialogTitle>
 
       <DialogContent>
+        {/* Error alert displayed prominently at the top when API operations fail */}
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
