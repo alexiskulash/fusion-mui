@@ -115,7 +115,7 @@ export default function Customers() {
           <UsersDataGrid
             onEditUser={handleEditUser}
             onDeleteUser={handleDeleteUser}
-            searchQuery={searchQuery}
+            searchQuery={debouncedSearchQuery}
           />
         </Paper>
       </Stack>
