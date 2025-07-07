@@ -56,8 +56,14 @@ export default function Customers() {
     setSelectedUser(null);
   };
 
-  const debouncedSearchQuery = React.useMemo(() => {
-    const timeoutId = setTimeout(() => searchQuery, 500);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] =
+    React.useState(searchQuery);
+
+  React.useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
 
