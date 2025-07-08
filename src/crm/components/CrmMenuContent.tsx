@@ -16,6 +16,9 @@ import AssignmentRoundedIcon from "@mui/icons-material/AssignmentRounded";
 import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import HelpOutlineRoundedIcon from "@mui/icons-material/HelpOutlineRounded";
+import LoginIcon from "@mui/icons-material/Login";
+import WorkIcon from "@mui/icons-material/Work";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 
 const mainListItems = [
   { text: "Dashboard", icon: <DashboardRoundedIcon />, path: "/" },
@@ -24,6 +27,13 @@ const mainListItems = [
   { text: "Contacts", icon: <ContactsRoundedIcon />, path: "/contacts" },
   { text: "Tasks", icon: <AssignmentRoundedIcon />, path: "/tasks" },
   { text: "Reports", icon: <AssessmentRoundedIcon />, path: "/reports" },
+  { text: "Login", icon: <LoginIcon />, path: "/login" },
+  { text: "Jobs", icon: <WorkIcon />, path: "/jobs" },
+  {
+    text: "User Management",
+    icon: <ManageAccountsIcon />,
+    path: "/user-management",
+  },
 ];
 
 const secondaryListItems = [
