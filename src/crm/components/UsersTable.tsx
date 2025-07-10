@@ -62,7 +62,7 @@ export default function UsersTable({
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [searchQuery, page, rowsPerPage, sortBy, sortOrder]);
+  }, [searchQuery, page, rowsPerPage, sortBy]);
 
   const fetchUsers = async () => {
     try {
