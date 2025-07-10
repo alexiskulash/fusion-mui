@@ -28,33 +28,73 @@ export default function DeleteUserDialog({
   onClose,
   onSuccess,
 }: DeleteUserDialogProps) {
+  // Track loading state during API call to prevent multiple simultaneous deletions
   const [loading, setLoading] = React.useState(false);
+
+  // Store any error messages that occur during deletion process
   const [error, setError] = React.useState<string | null>(null);
 
+  /**
+   * Handles the actual deletion of a user
+   * This function performs the following operations:
+   * 1. Validates that a user is selected
+   * 2. Sets loading state to show progress indicator
+   * 3. Clears any previous errors
+   * 4. Makes API call to delete the user
+   * 5. Calls success callback and closes dialog on success
+   * 6. Shows error message if deletion fails
+   * 7. Always resets loading state in finally block
+   */
   const handleDelete = async () => {
+    // Early return if no user is selected (defensive programming)
     if (!user) return;
 
+    // Set loading state to disable buttons and show progress indicator
     setLoading(true);
+
+    // Clear any previous error messages before attempting deletion
     setError(null);
 
     try {
+      // Call API to delete user using their unique UUID identifier
       await usersApi.deleteUser(user.login.uuid);
+
+      // Notify parent component that deletion was successful
+      // This typically triggers a refresh of the users list
       onSuccess();
+
+      // Close the dialog after successful deletion
       onClose();
     } catch (err) {
+      // Handle deletion errors by setting error state
+      // Check if error is an Error object to safely access message property
+      // Fallback to generic message if error format is unexpected
       setError(err instanceof Error ? err.message : "Failed to delete user");
     } finally {
+      // Always reset loading state regardless of success or failure
+      // This ensures UI returns to normal state and buttons are re-enabled
       setLoading(false);
     }
   };
 
+  /**
+   * Handles dialog close events
+   * Prevents closing the dialog while an API operation is in progress
+   * Clears error state when dialog is closed to ensure clean state for next open
+   */
   const handleClose = () => {
+    // Only allow closing if not currently performing deletion operation
     if (!loading) {
+      // Clear any error messages when closing dialog
       setError(null);
+
+      // Call parent's onClose callback to actually close the dialog
       onClose();
     }
   };
 
+  // Early return if no user is provided - dialog should not render
+  // This is a defensive check to prevent rendering with invalid data
   if (!user) {
     return null;
   }
