@@ -216,7 +216,7 @@ export default function LoginPage(props: { disableCustomTheme?: boolean }) {
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                gap: 2,
+                gap: "16px",
                 width: "100%",
               }}
             >
