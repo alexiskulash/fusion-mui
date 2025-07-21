@@ -137,7 +137,7 @@ const StyledCheckbox = styled(Checkbox)(({ theme }) => ({
 export default function LoginPage(props: { disableCustomTheme?: boolean }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [rememberMe, setRememberMe] = React.useState(true);
+  const [rememberMe, setRememberMe] = React.useState(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
