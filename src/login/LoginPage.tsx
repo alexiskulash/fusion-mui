@@ -136,9 +136,16 @@ const StyledCheckbox = styled(Checkbox)(({ theme }) => ({
 }));
 
 export default function LoginPage(props: { disableCustomTheme?: boolean }) {
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [rememberMe, setRememberMe] = React.useState(false);
+  const [rememberMe, setRememberMe] = React.useState(isDesktop);
+
+  React.useEffect(() => {
+    setRememberMe(isDesktop);
+  }, [isDesktop]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
