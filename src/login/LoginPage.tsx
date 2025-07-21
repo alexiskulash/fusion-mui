@@ -11,7 +11,8 @@ import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
-import { styled } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import AppTheme from "../shared-theme/AppTheme";
 
 const LoginContainer = styled(Box)(({ theme }) => ({
