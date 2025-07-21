@@ -205,6 +205,7 @@ export default function LoginPage(props: { disableCustomTheme?: boolean }) {
             sx={{
               padding: "16px",
               width: "100%",
+              paddingTop: "0px",
               "&:last-child": {
                 paddingBottom: "16px",
               },
