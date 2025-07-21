@@ -33,6 +33,7 @@ const StyledCard = styled(MuiCard)(({ theme }) => ({
   alignItems: "center",
   width: "100%",
   maxWidth: "552px",
+  height: "400px",
   padding: 0,
   boxShadow: "none",
   border: "none",
