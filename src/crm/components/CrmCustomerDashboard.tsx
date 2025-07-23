@@ -101,32 +101,42 @@ export default function CrmCustomerDashboard({ onEditUser }: CrmCustomerDashboar
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Fetch users when pagination or search changes
+  // Main effect to fetch users data whenever pagination settings or search query changes
+  // This ensures the grid stays synchronized with user interactions
   React.useEffect(() => {
     const loadUsers = async () => {
+      // Set loading state to show spinner in DataGrid
       setLoading(true);
       try {
+        // Call Users API with current pagination and search parameters
         const response = await fetchUsers(
-          paginationModel.page + 1, // API uses 1-based pagination
+          paginationModel.page + 1, // Convert 0-based DataGrid page to 1-based API page
           paginationModel.pageSize,
-          debouncedSearchQuery || undefined,
-          "name.first"
+          debouncedSearchQuery || undefined, // Only pass search if it exists
+          "name.first" // Default sort by first name
         );
-        
+
+        // Transform raw API user data into format expected by DataGrid
+        // This flattens nested properties and adds computed fields
         const transformedData = transformUserData(response.data);
         setUsers(transformedData);
+
+        // Update total count for pagination calculations
         setTotalUsers(response.total);
       } catch (error) {
+        // Log error for debugging and reset data on failure
         console.error("Failed to fetch users:", error);
         setUsers([]);
         setTotalUsers(0);
       } finally {
+        // Always clear loading state regardless of success or failure
         setLoading(false);
       }
     };
 
+    // Execute the async function
     loadUsers();
-  }, [paginationModel, debouncedSearchQuery]);
+  }, [paginationModel, debouncedSearchQuery]); // Re-run when pagination or search changes
 
   const handleDeleteUser = async (userId: string) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
