@@ -27,30 +27,60 @@ interface CrmCustomerDashboardProps {
   onEditUser: (user: User) => void;
 }
 
-// Transform user data for DataGrid
+/**
+ * Transform raw User API data into a flattened structure optimized for DataGrid display
+ * This function performs several important operations:
+ * 1. Flattens nested object properties for easier column access
+ * 2. Creates computed fields like fullName and formatted street address
+ * 3. Preserves the original user object for edit operations
+ * 4. Ensures each row has a unique 'id' field required by DataGrid
+ */
 const transformUserData = (users: User[]) => {
   return users.map((user) => ({
+    // DataGrid requires a unique 'id' field - using UUID from login
     id: user.login.uuid,
+
+    // Preserve UUID and username for API operations
     uuid: user.login.uuid,
     username: user.login.username,
+
+    // Flatten name object and create computed full name for display
     firstName: user.name.first,
     lastName: user.name.last,
     fullName: `${user.name.first} ${user.name.last}`,
     title: user.name.title,
+
+    // Direct mapping of contact information
     email: user.email,
     gender: user.gender,
+
+    // Extract age and date from date of birth object
     age: user.dob.age,
     dateOfBirth: user.dob.date,
+
+    // Contact phone numbers
     phone: user.phone,
     cell: user.cell,
+
+    // Flatten location object for easier column access
     city: user.location.city,
     state: user.location.state,
     country: user.location.country,
     postcode: user.location.postcode,
+
+    // Create formatted street address from nested street object
     street: `${user.location.street.number} ${user.location.street.name}`,
+
+    // Registration information
     registrationDate: user.registered.date,
+
+    // Profile picture URL for avatar display
     profilePicture: user.picture.thumbnail,
+
+    // Nationality code
     nationality: user.nat,
+
+    // Keep reference to original user object for edit modal
     originalUser: user,
   }));
 };
