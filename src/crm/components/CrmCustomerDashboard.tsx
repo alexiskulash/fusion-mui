@@ -66,23 +66,38 @@ const formatDate = (dateString: string) => {
 };
 
 export default function CrmCustomerDashboard({ onEditUser }: CrmCustomerDashboardProps) {
+  // State to store the transformed user data that will be displayed in the DataGrid
+  // Using any[] type as the transformed data has a different shape than the original User type
   const [users, setUsers] = React.useState<any[]>([]);
+
+  // Loading state to show spinner while fetching data from the Users API
   const [loading, setLoading] = React.useState(true);
+
+  // Immediate search query state that updates as user types in the search field
   const [searchQuery, setSearchQuery] = React.useState("");
+
+  // Pagination model for DataGrid Pro - tracks current page and page size
+  // Note: DataGrid uses 0-based page indexing while our API uses 1-based
   const [paginationModel, setPaginationModel] = React.useState<GridPaginationModel>({
     page: 0,
     pageSize: 25,
   });
+
+  // Total number of users from API response - used for server-side pagination
   const [totalUsers, setTotalUsers] = React.useState(0);
 
-  // Debounced search
+  // Debounced search query to prevent excessive API calls while user is typing
+  // This creates a delay before actually triggering the search API call
   const [debouncedSearchQuery, setDebouncedSearchQuery] = React.useState("");
-  
+
+  // Effect to implement search debouncing - waits 500ms after user stops typing
+  // before updating the debounced query which triggers the API call
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery);
     }, 500);
 
+    // Cleanup function to clear timeout if searchQuery changes before 500ms
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
