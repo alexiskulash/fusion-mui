@@ -1,0 +1,324 @@
+import * as React from "react";
+import {
+  DataGridPro,
+  GridColDef,
+  GridPaginationModel,
+  GridToolbar,
+  GridActionsCellItem,
+  GridRowParams,
+} from "@mui/x-data-grid-pro";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Stack from "@mui/material/Stack";
+import Avatar from "@mui/material/Avatar";
+import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SearchIcon from "@mui/icons-material/Search";
+import InputAdornment from "@mui/material/InputAdornment";
+import { fetchUsers, deleteUser, User } from "../services/usersApi";
+import { alpha } from "@mui/material/styles";
+
+interface CrmCustomerDashboardProps {
+  onEditUser: (user: User) => void;
+}
+
+// Transform user data for DataGrid
+const transformUserData = (users: User[]) => {
+  return users.map((user) => ({
+    id: user.login.uuid,
+    uuid: user.login.uuid,
+    username: user.login.username,
+    firstName: user.name.first,
+    lastName: user.name.last,
+    fullName: `${user.name.first} ${user.name.last}`,
+    title: user.name.title,
+    email: user.email,
+    gender: user.gender,
+    age: user.dob.age,
+    dateOfBirth: user.dob.date,
+    phone: user.phone,
+    cell: user.cell,
+    city: user.location.city,
+    state: user.location.state,
+    country: user.location.country,
+    postcode: user.location.postcode,
+    street: `${user.location.street.number} ${user.location.street.name}`,
+    registrationDate: user.registered.date,
+    profilePicture: user.picture.thumbnail,
+    nationality: user.nat,
+    originalUser: user,
+  }));
+};
+
+// Format date for display
+const formatDate = (dateString: string) => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  };
+  return new Date(dateString).toLocaleDateString("en-US", options);
+};
+
+export default function CrmCustomerDashboard({ onEditUser }: CrmCustomerDashboardProps) {
+  const [users, setUsers] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [paginationModel, setPaginationModel] = React.useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 25,
+  });
+  const [totalUsers, setTotalUsers] = React.useState(0);
+
+  // Debounced search
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = React.useState("");
+  
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Fetch users when pagination or search changes
+  React.useEffect(() => {
+    const loadUsers = async () => {
+      setLoading(true);
+      try {
+        const response = await fetchUsers(
+          paginationModel.page + 1, // API uses 1-based pagination
+          paginationModel.pageSize,
+          debouncedSearchQuery || undefined,
+          "name.first"
+        );
+        
+        const transformedData = transformUserData(response.data);
+        setUsers(transformedData);
+        setTotalUsers(response.total);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+        setUsers([]);
+        setTotalUsers(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUsers();
+  }, [paginationModel, debouncedSearchQuery]);
+
+  const handleDeleteUser = async (userId: string) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      try {
+        await deleteUser(userId);
+        // Reload users after deletion
+        const response = await fetchUsers(
+          paginationModel.page + 1,
+          paginationModel.pageSize,
+          debouncedSearchQuery || undefined,
+          "name.first"
+        );
+        const transformedData = transformUserData(response.data);
+        setUsers(transformedData);
+        setTotalUsers(response.total);
+      } catch (error) {
+        console.error("Failed to delete user:", error);
+        alert("Failed to delete user. Please try again.");
+      }
+    }
+  };
+
+  const columns: GridColDef[] = [
+    {
+      field: "profilePicture",
+      headerName: "",
+      width: 60,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => (
+        <Avatar
+          src={params.value}
+          alt={params.row.fullName}
+          sx={{ width: 32, height: 32 }}
+        >
+          {params.row.firstName?.[0]?.toUpperCase()}
+        </Avatar>
+      ),
+    },
+    {
+      field: "fullName",
+      headerName: "Full Name",
+      width: 180,
+      renderCell: (params) => (
+        <Box>
+          <Typography variant="body2" fontWeight={500}>
+            {params.row.fullName}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            @{params.row.username}
+          </Typography>
+        </Box>
+      ),
+    },
+    {
+      field: "email",
+      headerName: "Email",
+      width: 200,
+      renderCell: (params) => (
+        <Typography variant="body2">{params.value}</Typography>
+      ),
+    },
+    {
+      field: "age",
+      headerName: "Age",
+      width: 80,
+      type: "number",
+    },
+    {
+      field: "gender",
+      headerName: "Gender",
+      width: 100,
+      renderCell: (params) => (
+        <Chip
+          label={params.value}
+          size="small"
+          color={params.value === "male" ? "primary" : "secondary"}
+          variant="outlined"
+        />
+      ),
+    },
+    {
+      field: "city",
+      headerName: "City",
+      width: 120,
+    },
+    {
+      field: "country",
+      headerName: "Country",
+      width: 120,
+      renderCell: (params) => (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Typography variant="body2">{params.value}</Typography>
+          <Typography variant="caption" color="text.secondary">
+            ({params.row.nationality})
+          </Typography>
+        </Box>
+      ),
+    },
+    {
+      field: "phone",
+      headerName: "Phone",
+      width: 140,
+      renderCell: (params) => (
+        <Typography variant="body2" fontFamily="monospace">
+          {params.value}
+        </Typography>
+      ),
+    },
+    {
+      field: "registrationDate",
+      headerName: "Registered",
+      width: 120,
+      renderCell: (params) => (
+        <Typography variant="body2">
+          {formatDate(params.value)}
+        </Typography>
+      ),
+    },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 120,
+      getActions: (params: GridRowParams) => [
+        <GridActionsCellItem
+          icon={<EditIcon />}
+          label="Edit"
+          onClick={() => onEditUser(params.row.originalUser)}
+          color="primary"
+        />,
+        <GridActionsCellItem
+          icon={<DeleteIcon />}
+          label="Delete"
+          onClick={() => handleDeleteUser(params.row.uuid)}
+          color="error"
+        />,
+      ],
+    },
+  ];
+
+  return (
+    <Card variant="outlined" sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <CardContent sx={{ pb: 0 }}>
+        <Stack spacing={2}>
+          <Typography variant="h6" component="h2">
+            Customer Management Dashboard
+          </Typography>
+          <TextField
+            placeholder="Search customers by name, email, or city..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            variant="outlined"
+            size="small"
+            fullWidth
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="action" />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                backgroundColor: (theme) =>
+                  theme.palette.mode === "light"
+                    ? alpha(theme.palette.primary.main, 0.02)
+                    : alpha(theme.palette.primary.main, 0.1),
+              },
+            }}
+          />
+        </Stack>
+      </CardContent>
+      <Box sx={{ flexGrow: 1, p: 2, pt: 1 }}>
+        <DataGridPro
+          rows={users}
+          columns={columns}
+          loading={loading}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+          pageSizeOptions={[10, 25, 50, 100]}
+          paginationMode="server"
+          rowCount={totalUsers}
+          disableRowSelectionOnClick
+          sx={{
+            border: "none",
+            "& .MuiDataGrid-cell:focus": {
+              outline: "none",
+            },
+            "& .MuiDataGrid-row:hover": {
+              backgroundColor: (theme) =>
+                theme.palette.mode === "light"
+                  ? alpha(theme.palette.primary.main, 0.04)
+                  : alpha(theme.palette.primary.main, 0.08),
+            },
+          }}
+          slots={{
+            toolbar: GridToolbar,
+          }}
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+              quickFilterProps: { debounceMs: 500 },
+            },
+          }}
+        />
+      </Box>
+    </Card>
+  );
+}
