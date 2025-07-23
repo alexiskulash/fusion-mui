@@ -138,27 +138,38 @@ export default function CrmCustomerDashboard({ onEditUser }: CrmCustomerDashboar
     loadUsers();
   }, [paginationModel, debouncedSearchQuery]); // Re-run when pagination or search changes
 
+  // Handler for deleting a user with confirmation dialog and optimistic UI updates
   const handleDeleteUser = async (userId: string) => {
+    // Show native browser confirmation dialog for user safety
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
+        // Call API to delete the user by UUID
         await deleteUser(userId);
-        // Reload users after deletion
+
+        // Refresh the current page data after successful deletion
+        // This ensures the UI stays consistent and handles edge cases like
+        // deleting the last item on a page
         const response = await fetchUsers(
           paginationModel.page + 1,
           paginationModel.pageSize,
           debouncedSearchQuery || undefined,
           "name.first"
         );
+
+        // Transform and update the UI with fresh data
         const transformedData = transformUserData(response.data);
         setUsers(transformedData);
         setTotalUsers(response.total);
       } catch (error) {
+        // Log error for debugging and show user-friendly error message
         console.error("Failed to delete user:", error);
         alert("Failed to delete user. Please try again.");
       }
     }
   };
 
+  // DataGrid column definitions with custom renderers for rich data display
+  // Each column is configured with specific width, sorting, and rendering behavior
   const columns: GridColDef[] = [
     {
       field: "profilePicture",
