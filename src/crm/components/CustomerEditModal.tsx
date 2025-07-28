@@ -48,24 +48,40 @@ export default function CustomerEditModal({
     setSuccess(false);
   }, [customer, open]);
 
+  /**
+   * Handles input changes for both flat and nested object properties
+   * Supports dot notation field paths like 'name.first', 'location.city', etc.
+   *
+   * @param field - The field path using dot notation (e.g., 'name.first', 'location.street.name')
+   * @param value - The new value to set for the field
+   */
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => {
+      // Split the field path by dots to handle nested properties
       const keys = field.split('.');
+
+      // Handle simple (non-nested) fields directly
       if (keys.length === 1) {
         return { ...prev, [field]: value };
       }
-      
-      // Handle nested fields like name.first, location.city
+
+      // Handle nested fields like name.first, location.city, location.street.name
+      // Create a deep copy of the previous form data to avoid mutations
       const result = { ...prev };
       let current: any = result;
-      
+
+      // Navigate through the nested object structure, creating objects as needed
+      // We iterate through all keys except the last one to build the path
       for (let i = 0; i < keys.length - 1; i++) {
+        // If the current level doesn't exist, create an empty object
         if (!current[keys[i]]) {
           current[keys[i]] = {};
         }
+        // Move deeper into the nested structure
         current = current[keys[i]];
       }
-      
+
+      // Set the final value at the deepest level
       current[keys[keys.length - 1]] = value;
       return result;
     });
