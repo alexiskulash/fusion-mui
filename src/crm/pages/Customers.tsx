@@ -111,14 +111,22 @@ export default function Customers() {
     fetchCustomers();
   }, []);
 
-  const handleSearch = React.useCallback(
-    React.debounce((term: string) => {
-      const newFilters = { ...filters, search: term, page: 1 };
-      setFilters(newFilters);
-      fetchCustomers(newFilters);
-    }, 500),
-    [filters]
-  );
+  const handleSearch = React.useCallback((term: string) => {
+    const newFilters = { ...filters, search: term, page: 1 };
+    setFilters(newFilters);
+    fetchCustomers(newFilters);
+  }, [filters, fetchCustomers]);
+
+  // Debounced search effect
+  React.useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchTerm !== filters.search) {
+        handleSearch(searchTerm);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
 
   React.useEffect(() => {
     handleSearch(searchTerm);
