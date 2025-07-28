@@ -128,9 +128,7 @@ export default function Customers() {
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
-  React.useEffect(() => {
-    handleSearch(searchTerm);
-  }, [searchTerm, handleSearch]);
+
 
   const handleEditCustomer = (customer: User) => {
     setSelectedCustomer(customer);
