@@ -431,7 +431,11 @@ export default function Contacts() {
         for visual grouping and consistent elevation/shadow styling
       */}
       <Card variant="outlined" sx={{ mb: 2 }}>
-        {/* Toolbar */}
+        {/*
+          TOOLBAR SECTION
+          Contains all the controls for searching, filtering, and performing actions
+          on the user data. Uses responsive layout to stack vertically on mobile.
+        */}
         <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
           <Stack
             direction={{ xs: "column", md: "row" }}
@@ -439,8 +443,16 @@ export default function Contacts() {
             alignItems={{ xs: "stretch", md: "center" }}
             justifyContent="space-between"
           >
-            {/* Search and Filter */}
+            {/*
+              SEARCH AND FILTER CONTROLS
+              Left side of toolbar containing search input, sort selector, and filter button
+            */}
             <Stack direction="row" spacing={2} sx={{ flex: 1 }}>
+              {/*
+                SEARCH INPUT FIELD
+                Provides real-time search functionality with debouncing
+                to search across user names, emails, and other fields
+              */}
               <TextField
                 placeholder="Name, email, etc..."
                 value={search}
@@ -455,6 +467,12 @@ export default function Contacts() {
                   ),
                 }}
               />
+
+              {/*
+                SORT ATTRIBUTE SELECTOR
+                Allows users to choose which field to sort the results by
+                Supports both simple and nested object properties
+              */}
               <FormControl size="medium" sx={{ minWidth: 180 }}>
                 <InputLabel>Attribute</InputLabel>
                 <Select
@@ -470,16 +488,36 @@ export default function Contacts() {
                   <MenuItem value="registered.date">Registration Date</MenuItem>
                 </Select>
               </FormControl>
+
+              {/*
+                FILTER BUTTON
+                Placeholder for additional filtering functionality
+                Could open a filter dialog or dropdown in the future
+              */}
               <IconButton size="large">
                 <FilterAltIcon />
               </IconButton>
             </Stack>
 
-            {/* Actions */}
+            {/*
+              ACTION BUTTONS SECTION
+              Right side of toolbar containing action buttons for user management
+            */}
             <Stack direction="row" spacing={2}>
+              {/*
+                GENERIC ACTION BUTTON
+                Placeholder for bulk operations on selected users
+                Could be used for export, bulk edit, or other actions
+              */}
               <Button variant="outlined" color="inherit">
                 Action
               </Button>
+
+              {/*
+                NEW USER BUTTON
+                Primary action for creating new users
+                Uses contained variant to emphasize importance
+              */}
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
@@ -487,6 +525,11 @@ export default function Contacts() {
               >
                 New
               </Button>
+
+              {/*
+                SETTINGS BUTTON
+                Access to table configuration or user management settings
+              */}
               <IconButton size="large">
                 <SettingsIcon />
               </IconButton>
