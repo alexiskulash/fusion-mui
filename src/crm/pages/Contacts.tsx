@@ -1,3 +1,16 @@
+/**
+ * User Management Interface for CRM Contacts
+ *
+ * This component provides a comprehensive user management interface that matches
+ * the Figma design specifications. It includes:
+ * - Real-time search functionality with debouncing
+ * - Sortable user data with multiple attributes
+ * - Row selection with bulk operations
+ * - Pagination controls
+ * - Responsive design for all screen sizes
+ * - Integration with the Builder.io Users API
+ */
+
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -28,7 +41,19 @@ import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import AddIcon from "@mui/icons-material/Add";
 
-// User data type based on the API
+/**
+ * User data type definition based on the Builder.io Users API
+ * This interface matches the exact structure returned by the API endpoint:
+ * https://user-api.builder-io.workers.dev/api/users
+ *
+ * Each user contains comprehensive profile information including:
+ * - Authentication credentials (login object)
+ * - Personal information (name, gender, date of birth)
+ * - Contact information (email, phone numbers)
+ * - Location data with coordinates and timezone
+ * - Profile pictures in multiple sizes
+ * - Registration metadata
+ */
 interface User {
   login: {
     uuid: string;
