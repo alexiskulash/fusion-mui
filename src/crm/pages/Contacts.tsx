@@ -260,16 +260,33 @@ export default function Contacts() {
     }
   }, [searchDebounced, search, fetchUsers]);
 
-  // Handle pagination
+  // ============================================================================
+  // EVENT HANDLERS - PAGINATION
+  // ============================================================================
+
+  /**
+   * Handles page navigation in the pagination component
+   *
+   * @param event - The click event (unused but required by MUI)
+   * @param newPage - The new page number (0-indexed)
+   */
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
+  /**
+   * Handles changes to the number of rows displayed per page
+   *
+   * When the user changes the rows per page, we also reset to the first page
+   * to avoid being on a page that doesn't exist with the new page size.
+   *
+   * @param event - The select change event containing the new value
+   */
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setPage(0);  // Reset to first page when changing page size
   };
 
   // Handle selection
