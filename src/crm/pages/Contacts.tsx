@@ -710,15 +710,19 @@ export default function Contacts() {
           </Table>
         </TableContainer>
 
-        {/* Pagination */}
+        {/*
+          PAGINATION CONTROLS
+          Provides navigation through large datasets with customizable page size
+          Shows current range (e.g., "1-10 of 100") and navigation arrows
+        */}
         <TablePagination
-          rowsPerPageOptions={[10, 25, 50]}
-          component="div"
-          count={totalUsers}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={[10, 25, 50]}                       // Available page size options
+          component="div"                                          // Render as div instead of table element
+          count={totalUsers}                                       // Total number of users from API
+          rowsPerPage={rowsPerPage}                               // Current page size
+          page={page}                                             // Current page (0-indexed)
+          onPageChange={handleChangePage}                         // Page navigation handler
+          onRowsPerPageChange={handleChangeRowsPerPage}           // Page size change handler
         />
       </Card>
     </Box>
