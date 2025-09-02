@@ -131,14 +131,42 @@ interface User {
  */
 type AccountStatus = "Active" | "Suspended" | "Inactive";
 
+/**
+ * Main Contacts component that renders the user management interface
+ *
+ * This component handles all user interactions and API communications for
+ * managing contacts/users in the CRM system. It provides a table-based
+ * interface with search, filtering, sorting, and pagination capabilities.
+ *
+ * @returns JSX.Element The complete user management interface
+ */
 export default function Contacts() {
+  // ============================================================================
+  // STATE MANAGEMENT
+  // ============================================================================
+
+  /** Array of user objects fetched from the API */
   const [users, setUsers] = React.useState<User[]>([]);
+
+  /** Loading state to show/hide loading indicators during API calls */
   const [loading, setLoading] = React.useState(true);
+
+  /** Current page number for pagination (0-indexed) */
   const [page, setPage] = React.useState(0);
+
+  /** Number of rows to display per page (10, 25, or 50) */
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  /** Total number of users available (for pagination calculations) */
   const [totalUsers, setTotalUsers] = React.useState(0);
+
+  /** Current search query string for filtering users */
   const [search, setSearch] = React.useState("");
+
+  /** Current sort field (name.first, location.city, etc.) */
   const [sortBy, setSortBy] = React.useState("name.first");
+
+  /** Array of selected user UUIDs for bulk operations */
   const [selected, setSelected] = React.useState<string[]>([]);
 
   // Fetch users from the API
