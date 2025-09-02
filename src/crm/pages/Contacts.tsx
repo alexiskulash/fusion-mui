@@ -289,27 +289,58 @@ export default function Contacts() {
     setPage(0);  // Reset to first page when changing page size
   };
 
-  // Handle selection
+  // ============================================================================
+  // EVENT HANDLERS - ROW SELECTION
+  // ============================================================================
+
+  /**
+   * Handles the "select all" checkbox in the table header
+   *
+   * When checked, selects all users currently visible on the page.
+   * When unchecked, clears all selections. This provides a quick way
+   * to perform bulk operations on all visible users.
+   *
+   * @param event - The checkbox change event
+   */
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
+      // Select all users currently visible on this page
       const newSelected = users.map((user) => user.login.uuid);
       setSelected(newSelected);
       return;
     }
+    // Clear all selections
     setSelected([]);
   };
 
+  /**
+   * Handles individual row selection/deselection
+   *
+   * This function implements the standard selection behavior:
+   * - If the item is not selected, add it to the selection
+   * - If the item is selected, remove it from the selection
+   *
+   * The logic handles removing items from different positions in the array
+   * efficiently to maintain performance with large datasets.
+   *
+   * @param event - The click event (used to prevent propagation if needed)
+   * @param uuid - The unique identifier of the user to toggle
+   */
   const handleClick = (event: React.MouseEvent<unknown>, uuid: string) => {
     const selectedIndex = selected.indexOf(uuid);
     let newSelected: string[] = [];
 
     if (selectedIndex === -1) {
+      // Item not selected - add it to the selection
       newSelected = newSelected.concat(selected, uuid);
     } else if (selectedIndex === 0) {
+      // Item is first in selection - remove by taking everything after it
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
+      // Item is last in selection - remove by taking everything before it
       newSelected = newSelected.concat(selected.slice(0, -1));
     } else if (selectedIndex > 0) {
+      // Item is in middle - concatenate parts before and after it
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
         selected.slice(selectedIndex + 1)
@@ -319,6 +350,12 @@ export default function Contacts() {
     setSelected(newSelected);
   };
 
+  /**
+   * Utility function to check if a user is currently selected
+   *
+   * @param uuid - The user's unique identifier
+   * @returns boolean - True if the user is selected, false otherwise
+   */
   const isSelected = (uuid: string) => selected.indexOf(uuid) !== -1;
 
   // Get account status (simulated based on registration age)
