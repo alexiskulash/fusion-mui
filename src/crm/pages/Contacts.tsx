@@ -600,36 +600,54 @@ export default function Contacts() {
                 <TableCell sx={{ fontWeight: 600 }}>ID</TableCell>
               </TableRow>
             </TableHead>
+            {/*
+              TABLE BODY
+              Renders each user as a table row with interactive selection
+              and comprehensive user information display
+            */}
             <TableBody>
               {users.map((user) => {
+                // Calculate selection state and account status for this user
                 const isItemSelected = isSelected(user.login.uuid);
                 const status = getAccountStatus(user);
 
                 return (
                   <TableRow
-                    hover
-                    key={user.login.uuid}
-                    selected={isItemSelected}
-                    onClick={(event) => handleClick(event, user.login.uuid)}
-                    sx={{ cursor: "pointer" }}
+                    hover                                           // Show hover effect
+                    key={user.login.uuid}                         // Unique key for React
+                    selected={isItemSelected}                     // Highlight if selected
+                    onClick={(event) => handleClick(event, user.login.uuid)}  // Handle row clicks
+                    sx={{ cursor: "pointer" }}                   // Show clickable cursor
                   >
+                    {/*
+                      SELECTION CHECKBOX CELL
+                      Individual row selection with click event handling
+                      stopPropagation prevents row click when checking/unchecking
+                    */}
                     <TableCell padding="checkbox">
                       <Checkbox
                         color="primary"
                         checked={isItemSelected}
                         onChange={(event) => {
-                          event.stopPropagation();
+                          event.stopPropagation();  // Prevent row click when clicking checkbox
                           handleClick(event, user.login.uuid);
                         }}
                       />
                     </TableCell>
+
+                    {/*
+                      USER INFORMATION CELL
+                      Displays avatar and full name in a horizontal stack
+                      Avatar shows user image or fallback to initials
+                    */}
                     <TableCell>
                       <Stack direction="row" spacing={2} alignItems="center">
                         <Avatar
-                          src={user.picture.thumbnail}
+                          src={user.picture.thumbnail}             // Use thumbnail image
                           alt={`${user.name.first} ${user.name.last}`}
                           sx={{ width: 40, height: 40 }}
                         >
+                          {/* Fallback to initials if image fails to load */}
                           {user.name.first[0]}
                           {user.name.last[0]}
                         </Avatar>
@@ -638,9 +656,20 @@ export default function Contacts() {
                         </Typography>
                       </Stack>
                     </TableCell>
+
+                    {/*
+                      EMAIL CELL
+                      Simple text display of user's primary email address
+                    */}
                     <TableCell>
                       <Typography variant="body2">{user.email}</Typography>
                     </TableCell>
+
+                    {/*
+                      LOCATION CELL
+                      Shows city name with location icon for visual context
+                      Uses consistent spacing and icon sizing
+                    */}
                     <TableCell>
                       <Stack direction="row" spacing={1} alignItems="center">
                         <LocationOnIcon fontSize="small" color="action" />
@@ -649,6 +678,12 @@ export default function Contacts() {
                         </Typography>
                       </Stack>
                     </TableCell>
+
+                    {/*
+                      ACCOUNT STATUS CELL
+                      Colored chip indicating user's current account status
+                      Color is determined by getStatusColor utility function
+                    */}
                     <TableCell>
                       <Chip
                         label={status}
@@ -657,6 +692,12 @@ export default function Contacts() {
                         variant="filled"
                       />
                     </TableCell>
+
+                    {/*
+                      USER ID CELL
+                      Truncated UUID for reference purposes
+                      Shows first 8 characters followed by ellipsis
+                    */}
                     <TableCell>
                       <Typography variant="body2" color="text.secondary">
                         {user.login.uuid.substring(0, 8)}...
