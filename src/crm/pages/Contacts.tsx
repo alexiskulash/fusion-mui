@@ -55,55 +55,80 @@ import AddIcon from "@mui/icons-material/Add";
  * - Registration metadata
  */
 interface User {
+  /** Authentication and login credentials */
   login: {
-    uuid: string;
-    username: string;
-    password: string;
+    uuid: string;        // Unique identifier for the user
+    username: string;    // Username for login purposes
+    password: string;    // Encrypted password (not displayed in UI)
   };
+
+  /** Full name information with title */
   name: {
-    title: string;
-    first: string;
-    last: string;
+    title: string;       // Mr, Ms, Dr, etc.
+    first: string;       // Given name
+    last: string;        // Family name
   };
-  gender: string;
+
+  /** Gender information */
+  gender: string;        // Male, Female, or other gender identities
+
+  /** Complete location and address information */
   location: {
     street: {
-      number: number;
-      name: string;
+      number: number;    // Street number
+      name: string;      // Street name
     };
-    city: string;
-    state: string;
-    country: string;
-    postcode: string;
+    city: string;        // City name (displayed in table)
+    state: string;       // State or province
+    country: string;     // Country name
+    postcode: string;    // Postal/ZIP code
     coordinates: {
-      latitude: number;
-      longitude: number;
+      latitude: number;  // GPS latitude for mapping
+      longitude: number; // GPS longitude for mapping
     };
     timezone: {
-      offset: string;
-      description: string;
+      offset: string;    // UTC offset (e.g., "-05:00")
+      description: string; // Human-readable timezone
     };
   };
+
+  /** Primary email address for communication */
   email: string;
+
+  /** Date of birth and calculated age */
   dob: {
-    date: string;
-    age: number;
+    date: string;        // ISO date string
+    age: number;         // Calculated age in years
   };
+
+  /** Registration information and account age */
   registered: {
-    date: string;
-    age: number;
+    date: string;        // ISO date when user registered
+    age: number;         // Years since registration (used for status calculation)
   };
-  phone: string;
-  cell: string;
+
+  /** Contact phone numbers */
+  phone: string;         // Primary phone number
+  cell: string;          // Mobile/cellular number
+
+  /** Profile pictures in multiple resolutions */
   picture: {
-    large: string;
-    medium: string;
-    thumbnail: string;
+    large: string;       // High-resolution profile picture
+    medium: string;      // Medium-resolution for cards
+    thumbnail: string;   // Small thumbnail for table rows
   };
-  nat: string;
+
+  /** Nationality code */
+  nat: string;           // Two-letter country code
 }
 
-// Account status type
+/**
+ * Account status enumeration
+ * Determines the current state of a user's account for business logic:
+ * - Active: Normal user with full access
+ * - Suspended: Temporarily restricted user (shows warning chip)
+ * - Inactive: New or dormant user (shows error chip)
+ */
 type AccountStatus = "Active" | "Suspended" | "Inactive";
 
 export default function Contacts() {
