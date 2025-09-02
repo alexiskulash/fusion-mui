@@ -169,50 +169,94 @@ export default function Contacts() {
   /** Array of selected user UUIDs for bulk operations */
   const [selected, setSelected] = React.useState<string[]>([]);
 
-  // Fetch users from the API
+  // ============================================================================
+  // API INTEGRATION
+  // ============================================================================
+
+  /**
+   * Fetches users from the Builder.io Users API with current filters and pagination
+   *
+   * This function constructs the API request with the following parameters:
+   * - page: Current page number (converted from 0-indexed to 1-indexed)
+   * - perPage: Number of results per page
+   * - sortBy: Field to sort results by (supports nested properties)
+   * - search: Optional search query for filtering results
+   *
+   * The API returns paginated results with total count for pagination controls.
+   * Error handling ensures the UI remains functional even if the API fails.
+   */
   const fetchUsers = React.useCallback(async () => {
     try {
       setLoading(true);
+
+      // Build query parameters for the API request
       const queryParams = new URLSearchParams({
-        page: String(page + 1),
-        perPage: String(rowsPerPage),
-        sortBy: sortBy,
-        ...(search && { search }),
+        page: String(page + 1),        // Convert to 1-indexed for API
+        perPage: String(rowsPerPage),  // Number of results per page
+        sortBy: sortBy,                // Sort field (supports dot notation)
+        ...(search && { search }),     // Only include search if not empty
       });
 
+      // Make the API request to fetch users
       const response = await fetch(
         `https://user-api.builder-io.workers.dev/api/users?${queryParams}`
       );
       const data = await response.json();
 
-      setUsers(data.data || []);
-      setTotalUsers(data.total || 0);
+      // Update state with the fetched data
+      setUsers(data.data || []);       // User array from API response
+      setTotalUsers(data.total || 0);  // Total count for pagination
     } catch (error) {
+      // Handle API errors gracefully
       console.error("Failed to fetch users:", error);
-      setUsers([]);
+      setUsers([]);                    // Reset to empty array on error
     } finally {
-      setLoading(false);
+      setLoading(false);               // Always clear loading state
     }
   }, [page, rowsPerPage, search, sortBy]);
 
+  /**
+   * Fetch users whenever dependencies change
+   * This effect runs when page, rowsPerPage, search, or sortBy changes
+   */
   React.useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
-  // Handle search with debounce
+  // ============================================================================
+  // SEARCH DEBOUNCING
+  // ============================================================================
+
+  /**
+   * Debounced search implementation to avoid excessive API calls
+   *
+   * This pattern prevents API requests on every keystroke by implementing
+   * a 500ms delay. Only when the user stops typing for 500ms will the
+   * actual search be performed.
+   */
   const [searchDebounced, setSearchDebounced] = React.useState(search);
+
+  /**
+   * Debounce the search input with 500ms delay
+   * This prevents API calls on every keystroke for better performance
+   */
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setSearchDebounced(search);
     }, 500);
 
+    // Cleanup function to cancel the timer if search changes again
     return () => clearTimeout(timer);
   }, [search]);
 
+  /**
+   * Trigger new API request when debounced search changes
+   * Also resets pagination to first page when searching
+   */
   React.useEffect(() => {
     if (searchDebounced !== search) {
-      setPage(0);
-      fetchUsers();
+      setPage(0);                      // Reset to first page for new search
+      fetchUsers();                    // Fetch new results
     }
   }, [searchDebounced, search, fetchUsers]);
 
