@@ -408,16 +408,28 @@ export default function Contacts() {
     }
   };
 
+  // ============================================================================
+  // COMPONENT RENDER
+  // ============================================================================
+
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
-      {/* Page Header */}
+      {/*
+        PAGE HEADER SECTION
+        Displays the main page title with consistent typography
+        that matches the overall CRM design system
+      */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="h4" component="h1" sx={{ mb: 1, fontWeight: 600 }}>
           User management
         </Typography>
       </Box>
 
-      {/* Main Card */}
+      {/*
+        MAIN CARD CONTAINER
+        Wraps the entire user interface in a Material-UI card component
+        for visual grouping and consistent elevation/shadow styling
+      */}
       <Card variant="outlined" sx={{ mb: 2 }}>
         {/* Toolbar */}
         <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
