@@ -358,7 +358,24 @@ export default function Contacts() {
    */
   const isSelected = (uuid: string) => selected.indexOf(uuid) !== -1;
 
-  // Get account status (simulated based on registration age)
+  // ============================================================================
+  // UTILITY FUNCTIONS - BUSINESS LOGIC
+  // ============================================================================
+
+  /**
+   * Determines a user's account status based on their registration age
+   *
+   * This function implements business logic to categorize users:
+   * - Inactive: Users registered less than 1 year ago (new users)
+   * - Suspended: Users registered more than 5 years ago (legacy users needing review)
+   * - Active: Users registered between 1-5 years ago (standard active users)
+   *
+   * This simulated status system would typically be replaced with real
+   * account status data from the backend in a production environment.
+   *
+   * @param user - The user object containing registration information
+   * @returns AccountStatus - The calculated status for the user
+   */
   const getAccountStatus = (user: User): AccountStatus => {
     const registrationAge = user.registered.age;
     if (registrationAge < 1) return "Inactive";
@@ -366,17 +383,28 @@ export default function Contacts() {
     return "Active";
   };
 
-  // Get status chip color
+  /**
+   * Maps account status to appropriate Material-UI chip colors
+   *
+   * This function provides visual consistency by mapping each status
+   * to a semantically appropriate color:
+   * - Active: Green (success) - positive status
+   * - Suspended: Orange (warning) - attention needed
+   * - Inactive: Red (error) - problematic status
+   *
+   * @param status - The account status to get a color for
+   * @returns string - The Material-UI color variant
+   */
   const getStatusColor = (status: AccountStatus) => {
     switch (status) {
       case "Active":
-        return "success";
+        return "success";    // Green - everything is good
       case "Suspended":
-        return "warning";
+        return "warning";    // Orange - needs attention
       case "Inactive":
-        return "error";
+        return "error";      // Red - problematic
       default:
-        return "default";
+        return "default";    // Gray - fallback
     }
   };
 
