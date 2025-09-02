@@ -537,11 +537,27 @@ export default function Contacts() {
           </Stack>
         </Box>
 
-        {/* Table */}
+        {/*
+          DATA TABLE SECTION
+          Main table displaying user information in a structured format
+          with sortable columns, row selection, and responsive design
+        */}
         <TableContainer>
           <Table>
+            {/*
+              TABLE HEADER
+              Defines column structure and provides select-all functionality
+              Column headers use consistent typography and spacing
+            */}
             <TableHead>
               <TableRow>
+                {/*
+                  SELECT ALL CHECKBOX COLUMN
+                  Provides bulk selection functionality with three states:
+                  - Unchecked: No items selected
+                  - Indeterminate: Some items selected
+                  - Checked: All items selected
+                */}
                 <TableCell padding="checkbox">
                   <Checkbox
                     color="primary"
@@ -552,10 +568,35 @@ export default function Contacts() {
                     onChange={handleSelectAllClick}
                   />
                 </TableCell>
+
+                {/*
+                  USER COLUMN HEADER
+                  Contains avatar and full name information
+                */}
                 <TableCell sx={{ fontWeight: 600 }}>User</TableCell>
+
+                {/*
+                  EMAIL COLUMN HEADER
+                  Primary contact information
+                */}
                 <TableCell sx={{ fontWeight: 600 }}>Email</TableCell>
+
+                {/*
+                  LOCATION COLUMN HEADER
+                  City information with location icon
+                */}
                 <TableCell sx={{ fontWeight: 600 }}>Location</TableCell>
+
+                {/*
+                  ACCOUNT STATUS COLUMN HEADER
+                  Status chips showing user account state
+                */}
                 <TableCell sx={{ fontWeight: 600 }}>Account status</TableCell>
+
+                {/*
+                  ID COLUMN HEADER
+                  Truncated UUID for reference
+                */}
                 <TableCell sx={{ fontWeight: 600 }}>ID</TableCell>
               </TableRow>
             </TableHead>
