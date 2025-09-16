@@ -390,7 +390,7 @@ export default function CustomersTable() {
           {editForm && (
             <Box component="form" autoComplete="off" sx={{ mt: 1 }}>
               <Grid container spacing={2}>
-                <Grid size={{ xs: 12, sm: 6 }}>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="First name"
@@ -398,7 +398,7 @@ export default function CustomersTable() {
                     onChange={(e) => setEditForm({ ...(editForm as EditFormState), first: e.target.value })}
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="Last name"
@@ -406,7 +406,7 @@ export default function CustomersTable() {
                     onChange={(e) => setEditForm({ ...(editForm as EditFormState), last: e.target.value })}
                   />
                 </Grid>
-                <Grid size={{ xs: 12 }}>
+                <Grid item xs={12}>
                   <TextField
                     fullWidth
                     type="email"
@@ -415,7 +415,7 @@ export default function CustomersTable() {
                     onChange={(e) => setEditForm({ ...(editForm as EditFormState), email: e.target.value })}
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="City"
@@ -423,7 +423,7 @@ export default function CustomersTable() {
                     onChange={(e) => setEditForm({ ...(editForm as EditFormState), city: e.target.value })}
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="Country"
