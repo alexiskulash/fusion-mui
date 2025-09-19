@@ -11,6 +11,7 @@ import CrmRecentDealsTable from "./CrmRecentDealsTable";
 import CrmUpcomingTasks from "./CrmUpcomingTasks";
 import CrmSalesChart from "./CrmSalesChart";
 import CrmLeadsBySourceChart from "./CrmLeadsBySourceChart";
+import { keyframes } from "@mui/system";
 
 // Sample data for stat cards
 const statCardsData = [
@@ -60,6 +61,11 @@ const statCardsData = [
   },
 ];
 
+const easeInAppear = keyframes`
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
 export default function CrmMainDashboard() {
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
@@ -77,7 +83,7 @@ export default function CrmMainDashboard() {
           <Button
             variant="contained"
             startIcon={<AddRoundedIcon />}
-            sx={{ mr: 1 }}
+            sx={{ mr: 1, animation: `${easeInAppear} 300ms ease-in` }}
           >
             New Lead
           </Button>
