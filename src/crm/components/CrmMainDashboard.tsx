@@ -83,7 +83,7 @@ export default function CrmMainDashboard() {
           <Button
             variant="contained"
             startIcon={<AddRoundedIcon />}
-            sx={{ mr: 1, animation: `${easeInAppear} 300ms ease-in` }}
+            sx={{ mr: 1, animation: `${easeInAppear} 500ms ease-in` }}
           >
             New Lead
           </Button>
