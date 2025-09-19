@@ -3,6 +3,13 @@ import InputBase from "@mui/material/InputBase";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { alpha, styled } from "@mui/material/styles";
 
+type CrmSearchProps = {
+  value?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+  inputProps?: React.ComponentProps<typeof InputBase>["inputProps"];
+};
+
 const SearchWrapper = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -50,15 +57,22 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function CrmSearch() {
+export default function CrmSearch({
+  value,
+  onChange,
+  placeholder = "Search…",
+  inputProps,
+}: CrmSearchProps) {
   return (
     <SearchWrapper>
       <SearchIconWrapper>
         <SearchRoundedIcon fontSize="small" />
       </SearchIconWrapper>
       <StyledInputBase
-        placeholder="Search…"
-        inputProps={{ "aria-label": "search" }}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        inputProps={{ "aria-label": "search", ...inputProps }}
       />
     </SearchWrapper>
   );
