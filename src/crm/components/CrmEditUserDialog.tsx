@@ -28,12 +28,7 @@ export type ApiUser = {
 };
 
 function getUserId(user: ApiUser): string | undefined {
-  return (
-    user?.login?.username ||
-    user?.email ||
-    user?.login?.uuid ||
-    undefined
-  );
+  return user?.login?.uuid || user?.login?.username || user?.email || undefined;
 }
 
 type CrmEditUserDialogProps = {
