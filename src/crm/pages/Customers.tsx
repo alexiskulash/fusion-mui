@@ -49,12 +49,12 @@ export default function Customers() {
     fetchUsers();
   }, [fetchUsers]);
 
+  const getKey = (u: ApiUser | null) => u?.login?.uuid || u?.login?.username || u?.email || "";
   const handleSaved = (updated: ApiUser) => {
-    setUsers((prev) => prev.map((u) => {
-      const id = u?.login?.username || u?.email || u?.login?.uuid;
-      const uid = updated?.login?.username || updated?.email || updated?.login?.uuid;
-      return id === uid ? { ...u, ...updated, name: { ...u.name, ...updated.name }, location: { ...u.location, ...updated.location } } : u;
-    }));
+    setUsers((prev) => prev.map((u) => (getKey(u) === getKey(updated)
+      ? { ...u, ...updated, name: { ...u.name, ...updated.name }, location: { ...u.location, ...updated.location } }
+      : u
+    )));
   };
 
   return (
