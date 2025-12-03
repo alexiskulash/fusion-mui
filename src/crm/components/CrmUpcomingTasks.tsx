@@ -149,14 +149,7 @@ export default function CrmUpcomingTasks() {
                       </Typography>
                     }
                     secondary={
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                          mt: 0.5,
-                        }}
-                      >
+                      <React.Fragment>
                         <Chip
                           label={task.priority}
                           size="small"
@@ -164,14 +157,21 @@ export default function CrmUpcomingTasks() {
                           variant="outlined"
                           sx={{
                             height: 20,
+                            mr: 1,
                             "& .MuiChip-label": { px: 1, py: 0 },
                           }}
                         />
-                        <Typography variant="caption" color="text.secondary">
-                          {task.dueDate}
-                        </Typography>
-                      </Box>
+                        {task.dueDate}
+                      </React.Fragment>
                     }
+                    secondaryTypographyProps={{
+                      component: "span",
+                      sx: {
+                        display: "flex",
+                        alignItems: "center",
+                        mt: 0.5,
+                      },
+                    }}
                   />
                 </ListItemButton>
               </ListItem>
