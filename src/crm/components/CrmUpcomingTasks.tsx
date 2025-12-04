@@ -13,6 +13,8 @@ import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
+import Box from "@mui/material/Box";
+import Collapse from "@mui/material/Collapse";
 
 // Sample data for upcoming tasks
 const upcomingTasks = [
@@ -55,7 +57,7 @@ const upcomingTasks = [
 
 // Function to get priority color
 const getPriorityColor = (
-  priority: string,
+  priority: string
 ): "error" | "warning" | "default" => {
   switch (priority) {
     case "high":
@@ -69,14 +71,18 @@ const getPriorityColor = (
 
 export default function CrmUpcomingTasks() {
   const [tasks, setTasks] = React.useState(upcomingTasks);
+  const [showCompleted, setShowCompleted] = React.useState(true);
 
   const handleToggle = (id: number) => () => {
     setTasks(
       tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task,
-      ),
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
     );
   };
+
+  const activeTasks = tasks.filter((task) => !task.completed);
+  const completedTasks = tasks.filter((task) => task.completed);
 
   return (
     <Card
@@ -95,46 +101,79 @@ export default function CrmUpcomingTasks() {
           spacing={2}
           sx={{ p: 2, pb: 1 }}
         >
-          <Typography variant="h6" component="h3">
-            Upcoming Tasks
-          </Typography>
-          <Button endIcon={<ArrowForwardRoundedIcon />} size="small">
+          <Box>
+            <Typography variant="h6" component="h3" fontWeight={600}>
+              Upcoming Tasks
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {activeTasks.length} active, {completedTasks.length} completed
+            </Typography>
+          </Box>
+          <Button
+            endIcon={<ArrowForwardRoundedIcon />}
+            size="small"
+            sx={{ display: { xs: "none", sm: "flex" } }}
+          >
             View All
           </Button>
         </Stack>
 
-        <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-          {tasks.map((task) => {
+        <List sx={{ width: "100%", bgcolor: "background.paper", py: 0 }}>
+          {/* Active Tasks */}
+          {activeTasks.map((task) => {
             const labelId = `checkbox-list-label-${task.id}`;
 
             return (
               <ListItem
                 key={task.id}
                 secondaryAction={
-                  <IconButton edge="end" aria-label="more details">
-                    <ArrowForwardRoundedIcon />
+                  <IconButton
+                    edge="end"
+                    aria-label="more details"
+                    size="small"
+                    sx={{
+                      opacity: 0.5,
+                      "&:hover": { opacity: 1 },
+                    }}
+                  >
+                    <ArrowForwardRoundedIcon fontSize="small" />
                   </IconButton>
                 }
                 disablePadding
+                sx={{
+                  borderLeft: 3,
+                  borderColor:
+                    task.priority === "high"
+                      ? "error.main"
+                      : task.priority === "medium"
+                        ? "warning.main"
+                        : "grey.300",
+                  "&:hover": {
+                    bgcolor: "action.hover",
+                  },
+                }}
               >
                 <ListItemButton
                   role={undefined}
                   onClick={handleToggle(task.id)}
                   dense
+                  sx={{ pl: 1 }}
                 >
-                  <ListItemIcon>
+                  <ListItemIcon sx={{ minWidth: 40 }}>
                     <Checkbox
                       edge="start"
                       checked={task.completed}
                       tabIndex={-1}
                       disableRipple
                       inputProps={{ "aria-labelledby": labelId }}
+                      size="small"
                     />
                   </ListItemIcon>
                   <ListItemText
                     id={labelId}
                     primary={
                       <Typography
+                        variant="body2"
                         sx={{
                           textDecoration: task.completed
                             ? "line-through"
@@ -142,13 +181,19 @@ export default function CrmUpcomingTasks() {
                           color: task.completed
                             ? "text.secondary"
                             : "text.primary",
+                          fontWeight: 500,
                         }}
                       >
                         {task.task}
                       </Typography>
                     }
                     secondary={
-                      <React.Fragment>
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        alignItems="center"
+                        sx={{ mt: 0.5 }}
+                      >
                         <Chip
                           label={task.priority}
                           size="small"
@@ -156,26 +201,115 @@ export default function CrmUpcomingTasks() {
                           variant="outlined"
                           sx={{
                             height: 20,
-                            mr: 1,
+                            fontSize: "0.65rem",
+                            textTransform: "uppercase",
                             "& .MuiChip-label": { px: 1, py: 0 },
                           }}
                         />
-                        {task.dueDate}
-                      </React.Fragment>
+                        <Typography
+                          component="span"
+                          variant="caption"
+                          color="text.secondary"
+                        >
+                          {task.dueDate}
+                        </Typography>
+                      </Stack>
                     }
-                    secondaryTypographyProps={{
-                      component: "span",
-                      sx: {
-                        display: "flex",
-                        alignItems: "center",
-                        mt: 0.5,
-                      },
-                    }}
                   />
                 </ListItemButton>
               </ListItem>
             );
           })}
+
+          {/* Completed Tasks Section */}
+          {completedTasks.length > 0 && (
+            <>
+              <ListItem
+                sx={{
+                  py: 1,
+                  px: 2,
+                  bgcolor: "action.hover",
+                  cursor: "pointer",
+                }}
+                onClick={() => setShowCompleted(!showCompleted)}
+              >
+                <Typography variant="caption" fontWeight={600} color="text.secondary">
+                  Completed ({completedTasks.length})
+                </Typography>
+                <IconButton
+                  size="small"
+                  sx={{
+                    ml: "auto",
+                    transform: showCompleted ? "rotate(90deg)" : "rotate(0deg)",
+                    transition: "transform 0.2s",
+                  }}
+                >
+                  <ArrowForwardRoundedIcon fontSize="small" />
+                </IconButton>
+              </ListItem>
+
+              <Collapse in={showCompleted}>
+                {completedTasks.map((task) => {
+                  const labelId = `checkbox-list-label-${task.id}`;
+
+                  return (
+                    <ListItem
+                      key={task.id}
+                      disablePadding
+                      sx={{
+                        opacity: 0.6,
+                        "&:hover": {
+                          bgcolor: "action.hover",
+                          opacity: 1,
+                        },
+                      }}
+                    >
+                      <ListItemButton
+                        role={undefined}
+                        onClick={handleToggle(task.id)}
+                        dense
+                        sx={{ pl: 1 }}
+                      >
+                        <ListItemIcon sx={{ minWidth: 40 }}>
+                          <Checkbox
+                            edge="start"
+                            checked={task.completed}
+                            tabIndex={-1}
+                            disableRipple
+                            inputProps={{ "aria-labelledby": labelId }}
+                            size="small"
+                          />
+                        </ListItemIcon>
+                        <ListItemText
+                          id={labelId}
+                          primary={
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                textDecoration: "line-through",
+                                color: "text.secondary",
+                              }}
+                            >
+                              {task.task}
+                            </Typography>
+                          }
+                          secondary={
+                            <Typography
+                              component="span"
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              {task.dueDate}
+                            </Typography>
+                          }
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  );
+                })}
+              </Collapse>
+            </>
+          )}
         </List>
       </CardContent>
     </Card>
