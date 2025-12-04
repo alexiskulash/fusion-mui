@@ -5,6 +5,7 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
+import Avatar from "@mui/material/Avatar";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
 import PhoneRoundedIcon from "@mui/icons-material/PhoneRounded";
@@ -69,46 +70,93 @@ export default function CrmActivitiesTimeline() {
           spacing={2}
           sx={{ p: 2, pb: 1 }}
         >
-          <Typography variant="h6" component="h3">
-            Recent Activities
-          </Typography>
-          <Button endIcon={<ArrowForwardRoundedIcon />} size="small">
+          <Box>
+            <Typography variant="h6" component="h3" fontWeight={600}>
+              Recent Activities
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Latest updates from your team
+            </Typography>
+          </Box>
+          <Button
+            endIcon={<ArrowForwardRoundedIcon />}
+            size="small"
+            sx={{ display: { xs: "none", sm: "flex" } }}
+          >
             View All
           </Button>
         </Stack>
 
-        <Box sx={{ p: 2 }}>
-          {activities.map((activity) => (
+        <Box sx={{ px: 2, pb: 2, pt: 1 }}>
+          {activities.map((activity, index) => (
             <Box
               key={activity.id}
               sx={{
                 display: "flex",
-                mb: 2,
+                mb: index === activities.length - 1 ? 0 : 2.5,
                 gap: 2,
                 alignItems: "flex-start",
+                position: "relative",
+                "&::before":
+                  index === activities.length - 1
+                    ? {}
+                    : {
+                        content: '""',
+                        position: "absolute",
+                        left: 19,
+                        top: 38,
+                        bottom: -20,
+                        width: 2,
+                        bgcolor: "divider",
+                      },
               }}
             >
-              <Box
+              <Avatar
                 sx={{
                   bgcolor: `${activity.color}.main`,
-                  borderRadius: "50%",
-                  p: 0.75,
-                  display: "flex",
-                  color: "white",
+                  width: 38,
+                  height: 38,
+                  boxShadow: 2,
+                  transition: "all 0.2s",
+                  "&:hover": {
+                    transform: "scale(1.1)",
+                    boxShadow: 4,
+                  },
                 }}
               >
                 {activity.icon}
-              </Box>
-              <Box sx={{ flexGrow: 1 }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                  <Typography variant="subtitle2" component="span">
+              </Avatar>
+              <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    mb: 0.5,
+                  }}
+                >
+                  <Typography variant="subtitle2" component="span" fontWeight={600}>
                     {activity.title}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ flexShrink: 0, ml: 1 }}
+                  >
                     {activity.time}
                   </Typography>
                 </Box>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                  }}
+                >
                   {activity.description}
                 </Typography>
               </Box>
