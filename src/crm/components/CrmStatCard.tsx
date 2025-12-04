@@ -6,8 +6,10 @@ import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
+import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import { SparkLineChart } from "@mui/x-charts/SparkLineChart";
 import { areaElementClasses } from "@mui/x-charts/LineChart";
 
@@ -40,6 +42,7 @@ export default function CrmStatCard({
   data,
 }: CrmStatCardProps) {
   const theme = useTheme();
+  const [isHovered, setIsHovered] = React.useState(false);
 
   const trendColors = {
     up:
@@ -67,48 +70,99 @@ export default function CrmStatCard({
   const trendIcon = trendIcons[trend];
 
   return (
-    <Card variant="outlined" sx={{ height: "100%" }}>
-      <CardContent>
-        <Typography
-          component="h3"
-          variant="subtitle2"
-          color="text.secondary"
-          gutterBottom
-        >
-          {title}
-        </Typography>
+    <Card
+      variant="outlined"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      sx={{
+        height: "100%",
+        position: "relative",
+        overflow: "visible",
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        "&:hover": {
+          boxShadow: 4,
+          transform: "translateY(-4px)",
+          borderColor: "primary.main",
+        },
+      }}
+    >
+      <CardContent sx={{ pb: 2 }}>
         <Stack
-          direction="column"
-          sx={{ justifyContent: "space-between", flexGrow: "1", gap: 1 }}
+          direction="row"
+          justifyContent="space-between"
+          alignItems="flex-start"
+          sx={{ mb: 1 }}
         >
-          <Stack sx={{ justifyContent: "space-between" }}>
-            <Stack
-              direction="row"
-              sx={{ justifyContent: "space-between", alignItems: "center" }}
+          <Typography
+            component="h3"
+            variant="subtitle2"
+            color="text.secondary"
+            fontWeight={500}
+          >
+            {title}
+          </Typography>
+          <IconButton
+            size="small"
+            sx={{
+              opacity: isHovered ? 1 : 0,
+              transition: "opacity 0.2s",
+            }}
+          >
+            <MoreVertRoundedIcon fontSize="small" />
+          </IconButton>
+        </Stack>
+
+        <Stack spacing={1}>
+          {/* Value and Trend */}
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Typography
+              variant="h3"
+              component="p"
+              fontWeight={700}
+              sx={{
+                background: `linear-gradient(135deg, ${theme.palette.text.primary} 0%, ${theme.palette.primary.main} 100%)`,
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
             >
-              <Typography variant="h4" component="p" fontWeight="600">
-                {value}
-              </Typography>
-              <Chip
-                size="small"
-                color={color}
-                label={trendValue}
-                icon={trendIcon}
-                sx={{
-                  "& .MuiChip-icon": {
-                    marginLeft: "5px",
-                    marginRight: "-4px",
-                  },
-                }}
-              />
-            </Stack>
-            <Typography variant="caption" sx={{ color: "text.secondary" }}>
-              {interval}
+              {value}
             </Typography>
+            <Chip
+              size="small"
+              color={color}
+              label={trendValue}
+              icon={trendIcon}
+              sx={{
+                fontWeight: 600,
+                "& .MuiChip-icon": {
+                  marginLeft: theme.spacing(0.625),
+                  marginRight: theme.spacing(-0.5),
+                },
+              }}
+            />
           </Stack>
-          <Box sx={{ width: "100%", height: 50 }}>
+
+          {/* Interval */}
+          <Typography variant="caption" color="text.secondary">
+            {interval}
+          </Typography>
+
+          {/* Chart */}
+          <Box
+            sx={{
+              width: "100%",
+              height: 60,
+              mt: 1,
+              position: "relative",
+            }}
+          >
             <SparkLineChart
-              color={chartColor}
+              colors={[chartColor]}
               data={data}
               area
               showHighlight
@@ -117,9 +171,10 @@ export default function CrmStatCard({
                 scaleType: "band",
                 data: Array.from(
                   { length: data.length },
-                  (_, i) => `Day ${i + 1}`,
+                  (_, i) => `Day ${i + 1}`
                 ),
               }}
+              height={60}
               sx={{
                 [`& .${areaElementClasses.root}`]: {
                   fill: `url(#area-gradient-${title.replace(/\s+/g, "-").toLowerCase()})`,
@@ -134,6 +189,21 @@ export default function CrmStatCard({
           </Box>
         </Stack>
       </CardContent>
+
+      {/* Decorative Corner Accent */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          width: 60,
+          height: 60,
+          background: `linear-gradient(135deg, ${theme.palette.primary.main}20 0%, transparent 100%)`,
+          borderRadius: "0 8px 0 100%",
+          opacity: isHovered ? 1 : 0,
+          transition: "opacity 0.3s",
+        }}
+      />
     </Card>
   );
 }
