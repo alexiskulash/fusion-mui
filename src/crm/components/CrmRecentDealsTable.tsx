@@ -13,6 +13,7 @@ import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
+import LinearProgress from "@mui/material/LinearProgress";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import Button from "@mui/material/Button";
@@ -68,7 +69,7 @@ const recentDeals = [
 
 // Function to get color based on deal stage
 const getStageColor = (
-  stage: string,
+  stage: string
 ): "default" | "primary" | "success" | "warning" | "info" => {
   switch (stage) {
     case "Discovery":
@@ -82,6 +83,13 @@ const getStageColor = (
     default:
       return "default";
   }
+};
+
+// Get probability color
+const getProbabilityColor = (probability: number): string => {
+  if (probability >= 80) return "success.main";
+  if (probability >= 60) return "warning.main";
+  return "error.main";
 };
 
 // Format currency
@@ -104,6 +112,8 @@ const formatDate = (dateString: string) => {
 };
 
 export default function CrmRecentDealsTable() {
+  const [hoveredRow, setHoveredRow] = React.useState<number | null>(null);
+
   return (
     <Card
       variant="outlined"
@@ -121,45 +131,86 @@ export default function CrmRecentDealsTable() {
           spacing={2}
           sx={{ mb: 2 }}
         >
-          <Typography variant="h6" component="h3">
-            Recent Deals
-          </Typography>
-          <Button endIcon={<ArrowForwardRoundedIcon />} size="small">
+          <Box>
+            <Typography variant="h6" component="h3" fontWeight={600}>
+              Recent Deals
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Track your active deals and close rates
+            </Typography>
+          </Box>
+          <Button
+            endIcon={<ArrowForwardRoundedIcon />}
+            size="small"
+            sx={{ display: { xs: "none", sm: "flex" } }}
+          >
             View All
           </Button>
+          <IconButton size="small" sx={{ display: { xs: "flex", sm: "none" } }}>
+            <ArrowForwardRoundedIcon fontSize="small" />
+          </IconButton>
         </Stack>
       </CardContent>
       <TableContainer sx={{ flexGrow: 1 }}>
         <Table size="small" aria-label="recent deals table">
           <TableHead>
             <TableRow>
-              <TableCell>Deal Name</TableCell>
-              <TableCell>Customer</TableCell>
-              <TableCell align="right">Value</TableCell>
-              <TableCell>Stage</TableCell>
-              <TableCell align="right">Probability</TableCell>
-              <TableCell>Closing Date</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Deal Name</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Customer</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600 }}>
+                Value
+              </TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Stage</TableCell>
+              <TableCell sx={{ fontWeight: 600, display: { xs: "none", md: "table-cell" } }}>
+                Probability
+              </TableCell>
+              <TableCell sx={{ fontWeight: 600, display: { xs: "none", lg: "table-cell" } }}>
+                Closing Date
+              </TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600 }}>
+                Actions
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {recentDeals.map((deal) => (
-              <TableRow key={deal.id} hover>
-                <TableCell sx={{ fontWeight: 500 }}>{deal.name}</TableCell>
+              <TableRow
+                key={deal.id}
+                onMouseEnter={() => setHoveredRow(deal.id)}
+                onMouseLeave={() => setHoveredRow(null)}
+                sx={{
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  "&:hover": {
+                    bgcolor: "action.hover",
+                    transform: "scale(1.01)",
+                  },
+                }}
+              >
+                <TableCell>
+                  <Typography variant="body2" fontWeight={500}>
+                    {deal.name}
+                  </Typography>
+                </TableCell>
                 <TableCell>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Avatar
-                      sx={{ width: 28, height: 28, fontSize: "0.875rem" }}
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        fontSize: "0.875rem",
+                        bgcolor: "primary.main",
+                      }}
                     >
                       {deal.customer.avatar}
                     </Avatar>
-                    <Typography variant="body2">
-                      {deal.customer.name}
-                    </Typography>
+                    <Typography variant="body2">{deal.customer.name}</Typography>
                   </Box>
                 </TableCell>
                 <TableCell align="right">
-                  {formatCurrency(deal.value)}
+                  <Typography variant="body2" fontWeight={600}>
+                    {formatCurrency(deal.value)}
+                  </Typography>
                 </TableCell>
                 <TableCell>
                   <Chip
@@ -167,12 +218,51 @@ export default function CrmRecentDealsTable() {
                     size="small"
                     color={getStageColor(deal.stage)}
                     variant="outlined"
+                    sx={{ fontWeight: 500 }}
                   />
                 </TableCell>
-                <TableCell align="right">{deal.probability}%</TableCell>
-                <TableCell>{formatDate(deal.closingDate)}</TableCell>
+                <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                  <Box sx={{ width: "100%", maxWidth: 100 }}>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <LinearProgress
+                        variant="determinate"
+                        value={deal.probability}
+                        sx={{
+                          flexGrow: 1,
+                          height: 6,
+                          borderRadius: 3,
+                          bgcolor: "action.hover",
+                          "& .MuiLinearProgress-bar": {
+                            bgcolor: getProbabilityColor(deal.probability),
+                            borderRadius: 3,
+                          },
+                        }}
+                      />
+                      <Typography
+                        variant="caption"
+                        fontWeight={600}
+                        color={getProbabilityColor(deal.probability)}
+                        sx={{ minWidth: 35 }}
+                      >
+                        {deal.probability}%
+                      </Typography>
+                    </Stack>
+                  </Box>
+                </TableCell>
+                <TableCell sx={{ display: { xs: "none", lg: "table-cell" } }}>
+                  <Typography variant="body2" color="text.secondary">
+                    {formatDate(deal.closingDate)}
+                  </Typography>
+                </TableCell>
                 <TableCell align="right">
-                  <IconButton size="small" aria-label="more options">
+                  <IconButton
+                    size="small"
+                    aria-label="more options"
+                    sx={{
+                      opacity: hoveredRow === deal.id ? 1 : 0.3,
+                      transition: "opacity 0.2s",
+                    }}
+                  >
                     <MoreVertRoundedIcon fontSize="small" />
                   </IconButton>
                 </TableCell>
