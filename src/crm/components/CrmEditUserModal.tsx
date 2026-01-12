@@ -410,7 +410,9 @@ export default function CrmEditUserModal({
             Address
           </Typography>
 
+          {/* Street address - number and name */}
           <Grid container spacing={2}>
+            {/* Street number - smaller field for numeric value */}
             <Grid item xs={12} sm={3}>
               <TextField
                 label="Street Number"
@@ -421,11 +423,13 @@ export default function CrmEditUserModal({
                 onChange={(e) =>
                   handleChange(
                     "location.street.number",
-                    parseInt(e.target.value) || 0,
+                    parseInt(e.target.value) || 0, // Parse to int, default to 0
                   )
                 }
               />
             </Grid>
+
+            {/* Street name - larger field for text */}
             <Grid item xs={12} sm={9}>
               <TextField
                 label="Street Name"
@@ -439,7 +443,9 @@ export default function CrmEditUserModal({
             </Grid>
           </Grid>
 
+          {/* City and state fields */}
           <Grid container spacing={2}>
+            {/* City field */}
             <Grid item xs={12} sm={6}>
               <TextField
                 label="City"
@@ -449,6 +455,8 @@ export default function CrmEditUserModal({
                 onChange={(e) => handleChange("location.city", e.target.value)}
               />
             </Grid>
+
+            {/* State/province field */}
             <Grid item xs={12} sm={6}>
               <TextField
                 label="State"
@@ -460,7 +468,9 @@ export default function CrmEditUserModal({
             </Grid>
           </Grid>
 
+          {/* Country and postal code fields */}
           <Grid container spacing={2}>
+            {/* Country field */}
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Country"
@@ -472,6 +482,8 @@ export default function CrmEditUserModal({
                 }
               />
             </Grid>
+
+            {/* Postal/ZIP code field */}
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Postcode"
@@ -487,15 +499,19 @@ export default function CrmEditUserModal({
         </Stack>
       </DialogContent>
 
+      {/* MODAL FOOTER - Action buttons */}
       <DialogActions>
+        {/* Cancel button - closes modal without saving */}
         <Button onClick={onClose} disabled={loading}>
           Cancel
         </Button>
+
+        {/* Submit button - saves changes and updates user via API */}
         <Button
           type="submit"
           variant="contained"
-          disabled={loading}
-          startIcon={loading ? <CircularProgress size={16} /> : null}
+          disabled={loading} // Disable while submitting
+          startIcon={loading ? <CircularProgress size={16} /> : null} // Show spinner when loading
         >
           {loading ? "Saving..." : "Save Changes"}
         </Button>
