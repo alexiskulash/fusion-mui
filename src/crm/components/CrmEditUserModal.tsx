@@ -302,7 +302,10 @@ export default function CrmEditUserModal({
             </Alert>
           )}
 
+          {/* PERSONAL INFORMATION SECTION */}
+          {/* Name fields - Title, First Name, Last Name */}
           <Grid container spacing={2}>
+            {/* Title selector (Mr, Mrs, Ms, etc.) */}
             <Grid item xs={12} sm={4}>
               <FormControl fullWidth size="small">
                 <InputLabel>Title</InputLabel>
@@ -319,6 +322,8 @@ export default function CrmEditUserModal({
                 </Select>
               </FormControl>
             </Grid>
+
+            {/* First name - required field */}
             <Grid item xs={12} sm={4}>
               <TextField
                 label="First Name"
@@ -329,6 +334,8 @@ export default function CrmEditUserModal({
                 onChange={(e) => handleChange("name.first", e.target.value)}
               />
             </Grid>
+
+            {/* Last name - required field */}
             <Grid item xs={12} sm={4}>
               <TextField
                 label="Last Name"
@@ -341,7 +348,10 @@ export default function CrmEditUserModal({
             </Grid>
           </Grid>
 
+          {/* CONTACT INFORMATION SECTION */}
+          {/* Email and gender fields */}
           <Grid container spacing={2}>
+            {/* Email - required field with email validation */}
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Email"
@@ -353,6 +363,8 @@ export default function CrmEditUserModal({
                 onChange={(e) => handleChange("email", e.target.value)}
               />
             </Grid>
+
+            {/* Gender selector */}
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth size="small">
                 <InputLabel>Gender</InputLabel>
@@ -368,7 +380,9 @@ export default function CrmEditUserModal({
             </Grid>
           </Grid>
 
+          {/* Phone number fields */}
           <Grid container spacing={2}>
+            {/* Primary phone number */}
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Phone"
@@ -378,6 +392,8 @@ export default function CrmEditUserModal({
                 onChange={(e) => handleChange("phone", e.target.value)}
               />
             </Grid>
+
+            {/* Secondary/mobile phone number (optional) */}
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Cell"
@@ -389,6 +405,7 @@ export default function CrmEditUserModal({
             </Grid>
           </Grid>
 
+          {/* ADDRESS SECTION HEADER */}
           <Typography variant="subtitle2" sx={{ mt: 2 }}>
             Address
           </Typography>
