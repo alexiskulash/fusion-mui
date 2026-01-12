@@ -100,70 +100,152 @@ interface ApiResponse {
   data: User[]; // Array of user objects
 }
 
+/**
+ * Main users table component
+ */
 export default function CrmUsersTable() {
+  // STATE MANAGEMENT
+  // ----------------
+
+  /**
+   * Users array - holds the current page of user data from the API
+   */
   const [users, setUsers] = React.useState<User[]>([]);
+
+  /**
+   * Loading state - indicates when data is being fetched from the API
+   * Used to show loading indicators and disable interactions
+   */
   const [loading, setLoading] = React.useState(true);
+
+  /**
+   * Error state - holds any error messages from API calls
+   * Displayed as an alert banner when present
+   */
   const [error, setError] = React.useState<string | null>(null);
+
+  /**
+   * Search query state - holds the current search filter text
+   * Filters users by name, email, or city
+   */
   const [searchQuery, setSearchQuery] = React.useState("");
+
+  /**
+   * Pagination model - controls current page and items per page
+   * Note: API uses 1-based page numbers, but DataGrid uses 0-based
+   */
   const [paginationModel, setPaginationModel] = React.useState({
-    page: 0,
-    pageSize: 10,
+    page: 0, // Current page (0-indexed for DataGrid)
+    pageSize: 10, // Number of items per page
   });
+
+  /**
+   * Total row count - total number of users in the database
+   * Used for pagination to show correct number of pages
+   */
   const [totalRows, setTotalRows] = React.useState(0);
+
+  /**
+   * Edit modal visibility state
+   */
   const [editModalOpen, setEditModalOpen] = React.useState(false);
+
+  /**
+   * Selected user for editing
+   * Null when no user is selected
+   */
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
 
+  // API FUNCTIONS
+  // -------------
+
+  /**
+   * Fetches users from the API with current pagination and search parameters
+   * Uses useCallback to memoize the function and prevent unnecessary re-renders
+   * Dependencies: page, pageSize, searchQuery
+   */
   const fetchUsers = React.useCallback(async () => {
     setLoading(true);
     setError(null);
+
     try {
+      // Build query parameters for the API request
+      // Note: API uses 1-based page numbers, so we add 1 to the page
       const params = new URLSearchParams({
-        page: String(paginationModel.page + 1),
+        page: String(paginationModel.page + 1), // Convert to 1-based
         perPage: String(paginationModel.pageSize),
-        ...(searchQuery && { search: searchQuery }),
+        ...(searchQuery && { search: searchQuery }), // Only include search if not empty
       });
 
+      // Fetch users from the API
       const response = await fetch(
         `https://user-api.builder-io.workers.dev/api/users?${params}`,
       );
 
+      // Handle API errors
       if (!response.ok) {
         throw new Error(`Failed to fetch users: ${response.statusText}`);
       }
 
+      // Parse and store the response data
       const data: ApiResponse = await response.json();
-      setUsers(data.data);
-      setTotalRows(data.total);
+      setUsers(data.data); // Update users array
+      setTotalRows(data.total); // Update total count for pagination
     } catch (err) {
+      // Handle and display errors
       setError(err instanceof Error ? err.message : "Failed to fetch users");
       console.error("Error fetching users:", err);
     } finally {
+      // Always clear loading state, even if there was an error
       setLoading(false);
     }
   }, [paginationModel.page, paginationModel.pageSize, searchQuery]);
 
+  /**
+   * Effect to fetch users whenever pagination or search changes
+   * Runs on component mount and when fetchUsers dependencies change
+   */
   React.useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
+  // EVENT HANDLERS
+  // --------------
+
+  /**
+   * Handles search input changes
+   * Resets to page 0 when search query changes to show results from the beginning
+   */
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
-    setPaginationModel({ ...paginationModel, page: 0 });
+    setPaginationModel({ ...paginationModel, page: 0 }); // Reset to first page
   };
 
+  /**
+   * Opens the edit modal for a specific user
+   * @param user - The user to edit
+   */
   const handleEditClick = (user: User) => {
     setSelectedUser(user);
     setEditModalOpen(true);
   };
 
+  /**
+   * Closes the edit modal and clears the selected user
+   */
   const handleModalClose = () => {
     setEditModalOpen(false);
     setSelectedUser(null);
   };
 
+  /**
+   * Handles successful user update from the modal
+   * Refreshes the user list and closes the modal
+   * @param updatedUser - The updated user data (not currently used but available)
+   */
   const handleUserUpdate = async (updatedUser: User) => {
-    await fetchUsers();
-    handleModalClose();
+    await fetchUsers(); // Refresh the table data
+    handleModalClose(); // Close the modal
   };
 
   const columns: GridColDef[] = [
