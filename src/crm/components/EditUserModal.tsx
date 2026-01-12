@@ -14,8 +14,16 @@ import InputLabel from "@mui/material/InputLabel";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 
+/**
+ * Base URL for the Users API
+ * This API provides CRUD operations for user management
+ */
 const API_BASE_URL = "https://user-api.builder-io.workers.dev/api";
 
+/**
+ * Interface representing a user's physical location
+ * Contains address details including street, city, state, country, and postal code
+ */
 interface UserLocation {
   street: {
     number: number;
@@ -27,17 +35,29 @@ interface UserLocation {
   postcode: string;
 }
 
+/**
+ * Interface representing a user's name components
+ * Includes title (Mr, Mrs, etc.), first name, and last name
+ */
 interface UserName {
   title: string;
   first: string;
   last: string;
 }
 
+/**
+ * Interface representing user login credentials
+ * Contains unique identifier (UUID) and username
+ */
 interface UserLogin {
   uuid: string;
   username: string;
 }
 
+/**
+ * Main User interface representing a complete user object
+ * Contains all user information including personal details, contact info, and location
+ */
 interface User {
   login: UserLogin;
   name: UserName;
@@ -62,23 +82,54 @@ interface User {
   nat: string;
 }
 
+/**
+ * Props interface for the EditUserModal component
+ */
 interface EditUserModalProps {
+  /** Controls whether the modal is visible */
   open: boolean;
+  /** The user object to edit, or null if no user is selected */
   user: User | null;
+  /** Callback function to close the modal */
   onClose: () => void;
+  /** Callback function called after successfully saving user changes */
   onSave: (user: User) => void;
 }
 
+/**
+ * EditUserModal Component
+ * 
+ * A modal dialog for editing user information. Provides a comprehensive form
+ * for updating all user fields including name, contact information, and address.
+ * 
+ * Features:
+ * - Form validation for required fields
+ * - Loading state during API calls
+ * - Error handling with user-friendly messages
+ * - Nested object handling for complex data structures
+ * 
+ * @param props - Component props including open state, user data, and callbacks
+ * @returns A Material-UI Dialog with user edit form
+ */
 export default function EditUserModal({
   open,
   user,
   onClose,
   onSave,
 }: EditUserModalProps) {
+  // Loading state for API calls (shows spinner in save button)
   const [loading, setLoading] = React.useState(false);
+  
+  // Error message state for displaying API or validation errors
   const [error, setError] = React.useState<string | null>(null);
+  
+  // Form data state - starts as partial to handle incremental updates
   const [formData, setFormData] = React.useState<Partial<User>>({});
 
+  /**
+   * Effect to populate form when user prop changes
+   * Resets error state when a new user is loaded
+   */
   React.useEffect(() => {
     if (user) {
       setFormData(user);
@@ -86,29 +137,55 @@ export default function EditUserModal({
     }
   }, [user]);
 
+  /**
+   * Generic change handler for form fields
+   * Handles both flat and nested object properties
+   * 
+   * Examples:
+   * - "email" updates formData.email
+   * - "name.first" updates formData.name.first
+   * - "location.city" updates formData.location.city
+   * 
+   * @param field - Dot-notation path to the field (e.g., "name.first")
+   * @param value - New value for the field
+   */
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => {
       const keys = field.split(".");
+      
+      // Handle simple, non-nested fields
       if (keys.length === 1) {
         return { ...prev, [field]: value };
       }
 
-      // Handle nested fields like "name.first" or "location.city"
+      // Handle nested fields using dot notation
+      // Creates a deep copy to avoid mutating state
       const newData = { ...prev };
       let current: any = newData;
+      
+      // Navigate to the parent object, creating missing intermediate objects
       for (let i = 0; i < keys.length - 1; i++) {
         if (!current[keys[i]]) {
           current[keys[i]] = {};
         } else {
+          // Clone the nested object to maintain immutability
           current[keys[i]] = { ...current[keys[i]] };
         }
         current = current[keys[i]];
       }
+      
+      // Set the final value
       current[keys[keys.length - 1]] = value;
       return newData;
     });
   };
 
+  /**
+   * Form submission handler
+   * Sends PUT request to API to update user data
+   * 
+   * @param e - Form submit event
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -117,6 +194,7 @@ export default function EditUserModal({
     setError(null);
 
     try {
+      // Send PUT request to update user
       const response = await fetch(
         `${API_BASE_URL}/users/${user.login.uuid}`,
         {
@@ -132,14 +210,18 @@ export default function EditUserModal({
         throw new Error("Failed to update user");
       }
 
+      // Call parent's save handler with updated data
       onSave(formData as User);
     } catch (err) {
+      // Display error message to user
       setError(err instanceof Error ? err.message : "Failed to update user");
     } finally {
+      // Always stop loading, regardless of success/failure
       setLoading(false);
     }
   };
 
+  // Don't render modal if no user is selected
   if (!user) return null;
 
   return (
@@ -156,12 +238,14 @@ export default function EditUserModal({
       <DialogTitle>Edit User</DialogTitle>
       <DialogContent>
         <Stack spacing={3} sx={{ mt: 2 }}>
+          {/* Error alert banner - only shown when error exists */}
           {error && (
             <Alert severity="error" onClose={() => setError(null)}>
               {error}
             </Alert>
           )}
 
+          {/* Name section: Title, First Name, Last Name */}
           <Grid container spacing={2}>
             <Grid item xs={12} sm={4}>
               <FormControl fullWidth size="small">
@@ -201,6 +285,7 @@ export default function EditUserModal({
             </Grid>
           </Grid>
 
+          {/* Email field - required */}
           <TextField
             label="Email"
             type="email"
@@ -211,6 +296,7 @@ export default function EditUserModal({
             required
           />
 
+          {/* Contact numbers: Phone and Cell */}
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -232,6 +318,7 @@ export default function EditUserModal({
             </Grid>
           </Grid>
 
+          {/* Gender selection */}
           <FormControl fullWidth size="small">
             <InputLabel>Gender</InputLabel>
             <Select
@@ -244,6 +331,7 @@ export default function EditUserModal({
             </Select>
           </FormControl>
 
+          {/* Address section: Street Number and Street Name */}
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -270,6 +358,7 @@ export default function EditUserModal({
             </Grid>
           </Grid>
 
+          {/* Address section: City and State */}
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -291,6 +380,7 @@ export default function EditUserModal({
             </Grid>
           </Grid>
 
+          {/* Address section: Country and Postcode */}
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -317,11 +407,14 @@ export default function EditUserModal({
           </Grid>
         </Stack>
       </DialogContent>
+      
+      {/* Modal action buttons */}
       <DialogActions>
         <Button onClick={onClose} disabled={loading}>
           Cancel
         </Button>
         <Button type="submit" variant="contained" disabled={loading}>
+          {/* Show spinner during API call, otherwise show text */}
           {loading ? <CircularProgress size={24} /> : "Save Changes"}
         </Button>
       </DialogActions>
