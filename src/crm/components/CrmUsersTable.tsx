@@ -1,3 +1,23 @@
+/**
+ * CRM Users Table Component
+ *
+ * A comprehensive data table for displaying and managing users in the CRM system.
+ * This component integrates with the Users API and provides full CRUD functionality.
+ *
+ * Features:
+ * - Server-side pagination for efficient data handling
+ * - Real-time search across multiple fields (name, email, city)
+ * - Inline edit functionality via modal dialog
+ * - Responsive DataGrid with sortable columns
+ * - Loading and error states
+ * - User avatars and formatted data display
+ *
+ * API Integration:
+ * - Fetches data from https://user-api.builder-io.workers.dev/api/users
+ * - Supports query parameters: page, perPage, search
+ * - Updates user data via PUT requests
+ */
+
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -16,60 +36,68 @@ import Alert from "@mui/material/Alert";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import CrmEditUserModal from "./CrmEditUserModal";
 
+/**
+ * User interface matching the structure from the Users API
+ * Represents a complete user record with all associated data
+ */
 interface User {
   login: {
-    uuid: string;
-    username: string;
-    password: string;
+    uuid: string; // Unique identifier
+    username: string; // Login username
+    password: string; // User password
   };
   name: {
-    title: string;
-    first: string;
-    last: string;
+    title: string; // Honorific (Mr, Mrs, Ms, etc.)
+    first: string; // First name
+    last: string; // Last name
   };
-  gender: string;
+  gender: string; // Gender (male/female)
   location: {
     street: {
-      number: number;
-      name: string;
+      number: number; // Street number
+      name: string; // Street name
     };
-    city: string;
-    state: string;
-    country: string;
-    postcode: string;
+    city: string; // City
+    state: string; // State/province
+    country: string; // Country
+    postcode: string; // Postal code
     coordinates?: {
-      latitude: number;
-      longitude: number;
+      latitude: number; // GPS latitude
+      longitude: number; // GPS longitude
     };
     timezone?: {
-      offset: string;
-      description: string;
+      offset: string; // UTC offset
+      description: string; // Timezone name
     };
   };
-  email: string;
+  email: string; // Email address
   dob?: {
-    date: string;
-    age: number;
+    date: string; // Date of birth
+    age: number; // Calculated age
   };
   registered?: {
-    date: string;
-    age: number;
+    date: string; // Registration date
+    age: number; // Years since registration
   };
-  phone: string;
-  cell?: string;
+  phone: string; // Primary phone
+  cell?: string; // Cell/mobile phone
   picture?: {
-    large: string;
-    medium: string;
-    thumbnail: string;
+    large: string; // Large profile picture URL
+    medium: string; // Medium profile picture URL
+    thumbnail: string; // Thumbnail profile picture URL
   };
-  nat?: string;
+  nat?: string; // Nationality code
 }
 
+/**
+ * API Response interface for the Users API
+ * Contains pagination metadata and user data array
+ */
 interface ApiResponse {
-  page: number;
-  perPage: number;
-  total: number;
-  data: User[];
+  page: number; // Current page number
+  perPage: number; // Items per page
+  total: number; // Total number of users
+  data: User[]; // Array of user objects
 }
 
 export default function CrmUsersTable() {
