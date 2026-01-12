@@ -34,7 +34,9 @@
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@vitejs/plugin-react": "latest",
+    "identity-obj-proxy": "^3.0.0",
     "prettier": "3.5.3",
+    "ts-jest": "^29.4.6",
     "typescript": "latest",
     "vite": "latest"
   }
