@@ -485,12 +485,13 @@ export default function CrmUsersTable() {
         </CardContent>
       </Card>
 
+      {/* Edit User Modal - only rendered when a user is selected for editing */}
       {selectedUser && (
         <CrmEditUserModal
-          open={editModalOpen}
-          user={selectedUser}
-          onClose={handleModalClose}
-          onUpdate={handleUserUpdate}
+          open={editModalOpen} // Controls modal visibility
+          user={selectedUser} // The user being edited
+          onClose={handleModalClose} // Handle modal close
+          onUpdate={handleUserUpdate} // Handle successful update
         />
       )}
     </>
