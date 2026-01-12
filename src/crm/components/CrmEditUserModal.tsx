@@ -249,27 +249,33 @@ export default function CrmEditUserModal({
     }
   };
 
+  // RENDER
+  // ------
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
-      fullWidth
+      maxWidth="md" // Medium-sized modal for comfortable form viewing
+      fullWidth // Take full width up to maxWidth
       PaperProps={{
-        component: "form",
-        onSubmit: handleSubmit,
+        component: "form", // Render the dialog as a form element
+        onSubmit: handleSubmit, // Handle form submission
       }}
     >
+      {/* MODAL HEADER - Shows user avatar and identification */}
       <DialogTitle>
         <Stack direction="row" spacing={2} alignItems="center">
+          {/* User avatar - shows profile picture or initials */}
           <Avatar
             src={user.picture?.large}
             alt={`${user.name.first} ${user.name.last}`}
             sx={{ width: 48, height: 48 }}
           >
+            {/* Fallback to initials if no picture available */}
             {user.name.first[0]}
             {user.name.last[0]}
           </Avatar>
+          {/* User identification */}
           <Box>
             <Typography variant="h6">Edit User</Typography>
             <Typography variant="body2" color="text.secondary">
@@ -279,13 +285,17 @@ export default function CrmEditUserModal({
         </Stack>
       </DialogTitle>
 
+      {/* MODAL CONTENT - Contains all form fields */}
       <DialogContent dividers>
         <Stack spacing={3}>
+          {/* Error alert - shown when API call fails */}
           {error && (
             <Alert severity="error" onClose={() => setError(null)}>
               {error}
             </Alert>
           )}
+
+          {/* Success alert - shown when user is successfully updated */}
           {success && (
             <Alert severity="success" onClose={() => setSuccess(false)}>
               User updated successfully!
