@@ -397,11 +397,15 @@ export default function CrmUsersTable() {
     },
   ];
 
+  // RENDER
+  // ------
   return (
     <>
+      {/* Main card container */}
       <Card variant="outlined" sx={{ height: "100%" }}>
         <CardContent>
           <Stack spacing={2}>
+            {/* Header section with title */}
             <Stack
               direction="row"
               justifyContent="space-between"
@@ -413,6 +417,7 @@ export default function CrmUsersTable() {
               </Typography>
             </Stack>
 
+            {/* Search input field */}
             <TextField
               placeholder="Search users by name, email, or city..."
               variant="outlined"
@@ -429,26 +434,29 @@ export default function CrmUsersTable() {
               }}
             />
 
+            {/* Error alert - shown when API call fails */}
             {error ? (
               <Alert severity="error" sx={{ mb: 2 }}>
                 {error}
               </Alert>
             ) : null}
 
+            {/* DataGrid container */}
             <Box sx={{ height: 600, width: "100%" }}>
               <DataGrid
-                rows={users}
-                columns={columns}
-                getRowId={(row) => row.login.uuid}
-                loading={loading}
-                paginationMode="server"
-                paginationModel={paginationModel}
-                onPaginationModelChange={setPaginationModel}
-                pageSizeOptions={[5, 10, 25, 50]}
-                rowCount={totalRows}
-                disableRowSelectionOnClick
+                rows={users} // User data array
+                columns={columns} // Column definitions
+                getRowId={(row) => row.login.uuid} // Use UUID as unique row identifier
+                loading={loading} // Show loading state
+                paginationMode="server" // Enable server-side pagination
+                paginationModel={paginationModel} // Current page and page size
+                onPaginationModelChange={setPaginationModel} // Handle pagination changes
+                pageSizeOptions={[5, 10, 25, 50]} // Available page size options
+                rowCount={totalRows} // Total number of rows for pagination
+                disableRowSelectionOnClick // Don't select rows on click
                 sx={{
                   border: "none",
+                  // Remove focus outline from cells
                   "& .MuiDataGrid-cell:focus": {
                     outline: "none",
                   },
@@ -457,6 +465,7 @@ export default function CrmUsersTable() {
                   },
                 }}
                 slots={{
+                  // Custom loading overlay with centered spinner
                   loadingOverlay: () => (
                     <Box
                       sx={{
