@@ -245,9 +245,9 @@ describe('CrmUsersTable', () => {
       });
 
       const nextPageButton = screen.getByRole('button', {
-        name: /next page/i,
+        name: /go to next page/i,
       });
-      
+
       fireEvent.click(nextPageButton);
 
       await waitFor(() => {
@@ -264,12 +264,10 @@ describe('CrmUsersTable', () => {
         expect(screen.getByText('Mr John Doe')).toBeInTheDocument();
       });
 
-      // Find and click the rows per page dropdown
-      const rowsPerPageButton = screen.getByRole('combobox', {
-        name: /rows per page/i,
-      });
-      
-      fireEvent.mouseDown(rowsPerPageButton);
+      // Find and click the rows per page dropdown by its label text
+      const rowsPerPageElement = screen.getByLabelText(/rows per page:/i);
+
+      fireEvent.mouseDown(rowsPerPageElement);
 
       // Select 25 rows per page
       const option25 = await screen.findByRole('option', { name: '25' });
