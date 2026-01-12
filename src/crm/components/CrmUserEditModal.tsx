@@ -238,7 +238,7 @@ export default function CrmUserEditModal({
 
           {/* Contact Fields */}
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 required
                 fullWidth
@@ -250,13 +250,13 @@ export default function CrmUserEditModal({
                 onChange={handleChange}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControl fullWidth size="small">
                 <InputLabel>Gender</InputLabel>
                 <Select
                   name="gender"
                   value={formData.gender}
-                  onChange={handleChange}
+                  onChange={handleChange as any}
                   label="Gender"
                 >
                   <MenuItem value="male">Male</MenuItem>
@@ -269,7 +269,7 @@ export default function CrmUserEditModal({
 
           {/* Phone Fields */}
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth
                 size="small"
@@ -279,7 +279,7 @@ export default function CrmUserEditModal({
                 onChange={handleChange}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth
                 size="small"
@@ -293,7 +293,7 @@ export default function CrmUserEditModal({
 
           {/* Address Fields */}
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={3}>
+            <Grid size={{ xs: 12, sm: 3 }}>
               <TextField
                 fullWidth
                 size="small"
@@ -304,7 +304,7 @@ export default function CrmUserEditModal({
                 onChange={handleChange}
               />
             </Grid>
-            <Grid item xs={12} sm={9}>
+            <Grid size={{ xs: 12, sm: 9 }}>
               <TextField
                 fullWidth
                 size="small"
@@ -317,7 +317,7 @@ export default function CrmUserEditModal({
           </Grid>
 
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth
                 size="small"
@@ -327,7 +327,7 @@ export default function CrmUserEditModal({
                 onChange={handleChange}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth
                 size="small"
@@ -340,7 +340,7 @@ export default function CrmUserEditModal({
           </Grid>
 
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth
                 size="small"
@@ -350,7 +350,7 @@ export default function CrmUserEditModal({
                 onChange={handleChange}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth
                 size="small"
