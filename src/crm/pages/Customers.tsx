@@ -64,6 +64,7 @@ interface EditFormData {
   email: string;
   phone: string;
   city: string;
+  state: string;
   country: string;
 }
 
@@ -80,6 +81,7 @@ export default function Customers() {
     email: "",
     phone: "",
     city: "",
+    state: "",
     country: "",
   });
   const [saving, setSaving] = React.useState(false);
@@ -146,6 +148,7 @@ export default function Customers() {
       email: user.email,
       phone: user.phone,
       city: user.location.city,
+      state: user.location.state,
       country: user.location.country,
     });
     setOpenEditModal(true);
@@ -180,6 +183,7 @@ export default function Customers() {
         phone: editFormData.phone,
         location: {
           city: editFormData.city,
+          state: editFormData.state,
           country: editFormData.country,
         },
       };
@@ -215,6 +219,7 @@ export default function Customers() {
                 location: {
                   ...user.location,
                   city: editFormData.city,
+                  state: editFormData.state,
                   country: editFormData.country,
                 },
               }
@@ -427,12 +432,18 @@ export default function Customers() {
                 fullWidth
               />
               <TextField
-                label="Country"
-                value={editFormData.country}
-                onChange={(e) => handleFormChange("country", e.target.value)}
+                label="State"
+                value={editFormData.state}
+                onChange={(e) => handleFormChange("state", e.target.value)}
                 fullWidth
               />
             </Stack>
+            <TextField
+              label="Country"
+              value={editFormData.country}
+              onChange={(e) => handleFormChange("country", e.target.value)}
+              fullWidth
+            />
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
