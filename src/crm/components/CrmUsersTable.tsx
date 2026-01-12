@@ -248,7 +248,17 @@ export default function CrmUsersTable() {
     handleModalClose(); // Close the modal
   };
 
+  // COLUMN DEFINITIONS
+  // ------------------
+  /**
+   * DataGrid column configuration
+   * Defines how each column is displayed, sorted, and filtered
+   */
   const columns: GridColDef[] = [
+    /**
+     * Avatar column - displays user profile picture or initials
+     * Not sortable or filterable since it's just visual
+     */
     {
       field: "avatar",
       headerName: "",
@@ -261,15 +271,21 @@ export default function CrmUsersTable() {
           alt={`${params.row.name.first} ${params.row.name.last}`}
           sx={{ width: 36, height: 36 }}
         >
+          {/* Fallback to initials if no picture */}
           {params.row.name.first[0]}
           {params.row.name.last[0]}
         </Avatar>
       ),
     },
+    /**
+     * Name column - displays full name with username
+     * Shows name in bold and username as secondary text
+     * valueGetter is used for sorting/filtering the combined name
+     */
     {
       field: "name",
       headerName: "Name",
-      flex: 1,
+      flex: 1, // Flexible width
       minWidth: 180,
       valueGetter: (value, row) =>
         `${row.name.title} ${row.name.first} ${row.name.last}`,
@@ -284,12 +300,21 @@ export default function CrmUsersTable() {
         </Box>
       ),
     },
+    /**
+     * Email column - displays user's email address
+     * Simple text display with default sorting
+     */
     {
       field: "email",
       headerName: "Email",
       flex: 1,
       minWidth: 220,
     },
+    /**
+     * Location column - displays city, state, and country
+     * Shows city/state in primary text and country in secondary
+     * valueGetter combines city and country for sorting/filtering
+     */
     {
       field: "location",
       headerName: "Location",
