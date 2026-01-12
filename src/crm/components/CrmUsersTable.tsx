@@ -10,7 +10,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
+import Stack from "@mui/material/Stack";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";
@@ -306,32 +306,28 @@ export default function CrmUsersTable() {
       >
         <DialogTitle>Edit User</DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={4}>
+          <Stack spacing={2} sx={{ mt: 1 }}>
+            <Box sx={{ display: "flex", gap: 2 }}>
               <TextField
                 fullWidth
                 label="Title"
                 value={editFormData.name?.title || ""}
                 onChange={(e) => handleFormChange("name.title", e.target.value)}
               />
-            </Grid>
-            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 label="First Name"
                 value={editFormData.name?.first || ""}
                 onChange={(e) => handleFormChange("name.first", e.target.value)}
               />
-            </Grid>
-            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 label="Last Name"
                 value={editFormData.name?.last || ""}
                 onChange={(e) => handleFormChange("name.last", e.target.value)}
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            </Box>
+            <Box sx={{ display: "flex", gap: 2 }}>
               <TextField
                 fullWidth
                 label="Email"
@@ -339,16 +335,14 @@ export default function CrmUsersTable() {
                 value={editFormData.email || ""}
                 onChange={(e) => handleFormChange("email", e.target.value)}
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Phone"
                 value={editFormData.phone || ""}
                 onChange={(e) => handleFormChange("phone", e.target.value)}
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            </Box>
+            <Box sx={{ display: "flex", gap: 2 }}>
               <TextField
                 fullWidth
                 label="City"
@@ -357,8 +351,6 @@ export default function CrmUsersTable() {
                   handleFormChange("location.city", e.target.value)
                 }
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="State"
@@ -367,8 +359,8 @@ export default function CrmUsersTable() {
                   handleFormChange("location.state", e.target.value)
                 }
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            </Box>
+            <Box sx={{ display: "flex", gap: 2 }}>
               <TextField
                 fullWidth
                 label="Country"
@@ -377,8 +369,6 @@ export default function CrmUsersTable() {
                   handleFormChange("location.country", e.target.value)
                 }
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Postcode"
@@ -387,29 +377,25 @@ export default function CrmUsersTable() {
                   handleFormChange("location.postcode", e.target.value)
                 }
               />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Street Name"
-                value={editFormData.location?.street?.name || ""}
-                onChange={(e) =>
-                  handleFormChange("location.street.name", e.target.value)
-                }
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Street Number"
-                type="number"
-                value={editFormData.location?.street?.number || ""}
-                onChange={(e) =>
-                  handleFormChange("location.street.number", parseInt(e.target.value))
-                }
-              />
-            </Grid>
-          </Grid>
+            </Box>
+            <TextField
+              fullWidth
+              label="Street Name"
+              value={editFormData.location?.street?.name || ""}
+              onChange={(e) =>
+                handleFormChange("location.street.name", e.target.value)
+              }
+            />
+            <TextField
+              fullWidth
+              label="Street Number"
+              type="number"
+              value={editFormData.location?.street?.number || ""}
+              onChange={(e) =>
+                handleFormChange("location.street.number", parseInt(e.target.value))
+              }
+            />
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} disabled={saving}>
