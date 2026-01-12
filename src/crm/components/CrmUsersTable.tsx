@@ -275,14 +275,15 @@ export default function CrmUsersTable() {
           pagination
           paginationMode="server"
           rowCount={totalUsers}
-          page={page}
-          pageSize={pageSize}
-          onPageChange={setPage}
-          onPageSizeChange={setPageSize}
+          paginationModel={{ page, pageSize }}
+          onPaginationModelChange={(model) => {
+            setPage(model.page);
+            setPageSize(model.pageSize);
+          }}
           pageSizeOptions={[10, 20, 50, 100]}
           disableColumnResize
           density="compact"
-          getRowClassName={(params: GridRowParams) =>
+          getRowClassName={(params) =>
             params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
           }
           slotProps={{
