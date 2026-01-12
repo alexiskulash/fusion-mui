@@ -333,11 +333,19 @@ export default function CrmUsersTable() {
         </Box>
       ),
     },
+    /**
+     * Phone column - displays primary phone number
+     * Simple text display
+     */
     {
       field: "phone",
       headerName: "Phone",
       width: 140,
     },
+    /**
+     * Gender column - displays gender with color-coded chip
+     * Male = primary (blue), Female = secondary (purple/pink)
+     */
     {
       field: "gender",
       headerName: "Gender",
@@ -351,6 +359,10 @@ export default function CrmUsersTable() {
         />
       ),
     },
+    /**
+     * Age column - displays user's age from date of birth
+     * Center-aligned, shows "N/A" if age data is not available
+     */
     {
       field: "age",
       headerName: "Age",
@@ -359,6 +371,11 @@ export default function CrmUsersTable() {
       headerAlign: "center",
       valueGetter: (value, row) => row.dob?.age || "N/A",
     },
+    /**
+     * Actions column - displays edit button for each user
+     * Not sortable or filterable
+     * Triggers the edit modal when clicked
+     */
     {
       field: "actions",
       headerName: "Actions",
