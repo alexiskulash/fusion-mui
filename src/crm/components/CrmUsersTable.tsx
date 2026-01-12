@@ -5,13 +5,12 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
+import Grid2 from "@mui/material/Unstable_Grid2";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";
@@ -84,8 +83,10 @@ export default function CrmUsersTable() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
   const [totalRows, setTotalRows] = useState(0);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -98,8 +99,8 @@ export default function CrmUsersTable() {
       setError(null);
       
       const params = new URLSearchParams({
-        page: String(page + 1),
-        perPage: String(pageSize),
+        page: String(paginationModel.page + 1),
+        perPage: String(paginationModel.pageSize),
         ...(searchQuery && { search: searchQuery }),
       });
 
@@ -118,7 +119,7 @@ export default function CrmUsersTable() {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, searchQuery]);
+  }, [paginationModel.page, paginationModel.pageSize, searchQuery]);
 
   useEffect(() => {
     fetchUsers();
@@ -252,7 +253,7 @@ export default function CrmUsersTable() {
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
-              setPage(0); // Reset to first page on search
+              setPaginationModel({ ...paginationModel, page: 0 }); // Reset to first page on search
             }}
             InputProps={{
               startAdornment: (
@@ -280,10 +281,8 @@ export default function CrmUsersTable() {
             pagination
             paginationMode="server"
             rowCount={totalRows}
-            page={page}
-            pageSize={pageSize}
-            onPageChange={setPage}
-            onPageSizeChange={setPageSize}
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
             pageSizeOptions={[5, 10, 25, 50]}
             disableRowSelectionOnClick
             sx={{
@@ -307,32 +306,32 @@ export default function CrmUsersTable() {
       >
         <DialogTitle>Edit User</DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={4}>
+          <Grid2 container spacing={2} sx={{ mt: 1 }}>
+            <Grid2 xs={12} sm={4}>
               <TextField
                 fullWidth
                 label="Title"
                 value={editFormData.name?.title || ""}
                 onChange={(e) => handleFormChange("name.title", e.target.value)}
               />
-            </Grid>
-            <Grid item xs={12} sm={4}>
+            </Grid2>
+            <Grid2 xs={12} sm={4}>
               <TextField
                 fullWidth
                 label="First Name"
                 value={editFormData.name?.first || ""}
                 onChange={(e) => handleFormChange("name.first", e.target.value)}
               />
-            </Grid>
-            <Grid item xs={12} sm={4}>
+            </Grid2>
+            <Grid2 xs={12} sm={4}>
               <TextField
                 fullWidth
                 label="Last Name"
                 value={editFormData.name?.last || ""}
                 onChange={(e) => handleFormChange("name.last", e.target.value)}
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            </Grid2>
+            <Grid2 xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Email"
@@ -340,16 +339,16 @@ export default function CrmUsersTable() {
                 value={editFormData.email || ""}
                 onChange={(e) => handleFormChange("email", e.target.value)}
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            </Grid2>
+            <Grid2 xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Phone"
                 value={editFormData.phone || ""}
                 onChange={(e) => handleFormChange("phone", e.target.value)}
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            </Grid2>
+            <Grid2 xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="City"
@@ -358,8 +357,8 @@ export default function CrmUsersTable() {
                   handleFormChange("location.city", e.target.value)
                 }
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            </Grid2>
+            <Grid2 xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="State"
@@ -368,8 +367,8 @@ export default function CrmUsersTable() {
                   handleFormChange("location.state", e.target.value)
                 }
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            </Grid2>
+            <Grid2 xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Country"
@@ -378,8 +377,8 @@ export default function CrmUsersTable() {
                   handleFormChange("location.country", e.target.value)
                 }
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            </Grid2>
+            <Grid2 xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Postcode"
@@ -388,8 +387,8 @@ export default function CrmUsersTable() {
                   handleFormChange("location.postcode", e.target.value)
                 }
               />
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+            <Grid2 xs={12}>
               <TextField
                 fullWidth
                 label="Street Name"
@@ -398,8 +397,8 @@ export default function CrmUsersTable() {
                   handleFormChange("location.street.name", e.target.value)
                 }
               />
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+            <Grid2 xs={12}>
               <TextField
                 fullWidth
                 label="Street Number"
@@ -409,8 +408,8 @@ export default function CrmUsersTable() {
                   handleFormChange("location.street.number", parseInt(e.target.value))
                 }
               />
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} disabled={saving}>
