@@ -69,7 +69,7 @@ interface EditUserModalProps {
 }
 
 const titleOptions = ["Mr", "Mrs", "Ms", "Miss", "Dr"];
-const genderOptions = ["male", "female"];
+const genderOptions = ["male", "female", "prefer not to say"];
 
 export default function EditUserModal({
   open,
