@@ -110,48 +110,109 @@ interface EditUserModalProps {
   onUpdate: (user: User) => Promise<void>; // Callback when user is successfully updated
 }
 
+/**
+ * Modal component for editing user information
+ */
 export default function CrmEditUserModal({
   open,
   user,
   onClose,
   onUpdate,
 }: EditUserModalProps) {
+  // STATE MANAGEMENT
+  // ----------------
+
+  /**
+   * Form data state - holds the current values of all form fields
+   * Initialized with the user prop and updated as the user edits fields
+   */
   const [formData, setFormData] = React.useState<User>(user);
+
+  /**
+   * Loading state - indicates when the form is submitting to the API
+   * Used to disable form controls and show loading indicators
+   */
   const [loading, setLoading] = React.useState(false);
+
+  /**
+   * Error state - holds any error messages from API calls or validation
+   * Displayed as an alert banner when present
+   */
   const [error, setError] = React.useState<string | null>(null);
+
+  /**
+   * Success state - indicates when a user update was successful
+   * Triggers a success message alert
+   */
   const [success, setSuccess] = React.useState(false);
 
+  /**
+   * Effect to reset form state when the modal opens or user changes
+   * This ensures the form always shows the latest user data and clears
+   * any previous error/success states
+   */
   React.useEffect(() => {
-    setFormData(user);
-    setError(null);
-    setSuccess(false);
+    setFormData(user); // Reset form to current user data
+    setError(null); // Clear any previous errors
+    setSuccess(false); // Clear any previous success messages
   }, [user, open]);
 
+  // EVENT HANDLERS
+  // --------------
+
+  /**
+   * Generic change handler for all form fields
+   * Supports nested object paths using dot notation (e.g., "name.first", "location.city")
+   *
+   * @param field - The field path to update (supports dot notation for nested fields)
+   * @param value - The new value for the field
+   *
+   * Examples:
+   * - handleChange("email", "new@email.com") - updates top-level field
+   * - handleChange("name.first", "John") - updates nested field
+   * - handleChange("location.street.name", "Main St") - updates deeply nested field
+   */
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => {
+      // Split the field path by dots to handle nested objects
       const keys = field.split(".");
+
+      // Handle simple top-level fields
       if (keys.length === 1) {
         return { ...prev, [field]: value };
       }
 
+      // Handle nested fields by creating a new object with updated nested value
       const newData = { ...prev };
       let current: any = newData;
+
+      // Navigate to the parent of the target field, creating copies along the way
+      // This ensures immutability - we don't mutate the original object
       for (let i = 0; i < keys.length - 1; i++) {
-        current[keys[i]] = { ...current[keys[i]] };
-        current = current[keys[i]];
+        current[keys[i]] = { ...current[keys[i]] }; // Clone the nested object
+        current = current[keys[i]]; // Move deeper into the structure
       }
+
+      // Set the final value at the target field
       current[keys[keys.length - 1]] = value;
       return newData;
     });
   };
 
+  /**
+   * Form submission handler
+   * Validates form data, sends PUT request to the API, and handles the response
+   *
+   * @param e - Form event to prevent default browser submission
+   */
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccess(false);
+    e.preventDefault(); // Prevent default form submission behavior
+    setLoading(true); // Show loading state
+    setError(null); // Clear any previous errors
+    setSuccess(false); // Clear any previous success messages
 
     try {
+      // Send PUT request to update the user via the API
       const response = await fetch(
         `https://user-api.builder-io.workers.dev/api/users/${user.login.uuid}`,
         {
@@ -163,19 +224,27 @@ export default function CrmEditUserModal({
         },
       );
 
+      // Handle API errors
       if (!response.ok) {
+        // Try to parse error details from response body
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
           errorData.error || `Failed to update user: ${response.statusText}`,
         );
       }
 
+      // Show success message
       setSuccess(true);
+
+      // Notify parent component of successful update
+      // This typically triggers a refresh of the user list
       await onUpdate(formData);
     } catch (err) {
+      // Handle and display errors
       setError(err instanceof Error ? err.message : "Failed to update user");
       console.error("Error updating user:", err);
     } finally {
+      // Always clear loading state, even if there was an error
       setLoading(false);
     }
   };
