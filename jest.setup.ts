@@ -1,9 +1,9 @@
 require('@testing-library/jest-dom');
-const { TextEncoder, TextDecoder } = require('util');
+const util = require('util');
 
 // Polyfill TextEncoder/TextDecoder for jsdom
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder as any;
+global.TextEncoder = util.TextEncoder;
+global.TextDecoder = util.TextDecoder;
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
