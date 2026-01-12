@@ -1,3 +1,18 @@
+/**
+ * CRM Edit User Modal Component
+ *
+ * A comprehensive modal dialog for editing user information in the CRM system.
+ * This component provides a full-featured form for updating user details including
+ * personal information, contact details, and address information.
+ *
+ * Features:
+ * - Editable user profile with avatar display
+ * - Form validation for required fields
+ * - Real-time API updates with loading states
+ * - Success/error feedback notifications
+ * - Nested object state management for complex user data structure
+ */
+
 import * as React from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -17,60 +32,82 @@ import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 
+/**
+ * User interface matching the structure from the Users API
+ * (https://user-api.builder-io.workers.dev/api/users)
+ *
+ * This interface defines the complete user object structure including:
+ * - Login credentials and identification
+ * - Personal information (name, gender, age)
+ * - Contact information (email, phone, cell)
+ * - Location and address details
+ * - Optional metadata (date of birth, registration, pictures)
+ */
 interface User {
+  // User authentication and identification
   login: {
-    uuid: string;
-    username: string;
-    password: string;
+    uuid: string; // Unique identifier for the user
+    username: string; // Username for login
+    password: string; // Password (hashed in production)
   };
+  // User's full name with title
   name: {
-    title: string;
-    first: string;
-    last: string;
+    title: string; // Title (Mr, Mrs, Ms, Miss, Dr)
+    first: string; // First name
+    last: string; // Last name
   };
-  gender: string;
+  gender: string; // User's gender (male/female)
+  // Complete address and location information
   location: {
     street: {
-      number: number;
-      name: string;
+      number: number; // Street number
+      name: string; // Street name
     };
-    city: string;
-    state: string;
-    country: string;
-    postcode: string;
+    city: string; // City name
+    state: string; // State/province
+    country: string; // Country name
+    postcode: string; // Postal/ZIP code
+    // Optional geographical coordinates
     coordinates?: {
-      latitude: number;
-      longitude: number;
+      latitude: number; // GPS latitude
+      longitude: number; // GPS longitude
     };
+    // Optional timezone information
     timezone?: {
-      offset: string;
-      description: string;
+      offset: string; // UTC offset (e.g., "-05:00")
+      description: string; // Timezone description
     };
   };
-  email: string;
+  email: string; // Primary email address
+  // Optional date of birth information
   dob?: {
-    date: string;
-    age: number;
+    date: string; // Birth date in ISO format
+    age: number; // Calculated age
   };
+  // Optional registration information
   registered?: {
-    date: string;
-    age: number;
+    date: string; // Registration date in ISO format
+    age: number; // Years since registration
   };
-  phone: string;
-  cell?: string;
+  phone: string; // Primary phone number
+  cell?: string; // Optional cell/mobile number
+  // Optional profile pictures in multiple sizes
   picture?: {
-    large: string;
-    medium: string;
-    thumbnail: string;
+    large: string; // URL to large profile picture
+    medium: string; // URL to medium profile picture
+    thumbnail: string; // URL to thumbnail profile picture
   };
-  nat?: string;
+  nat?: string; // Optional nationality code
 }
 
+/**
+ * Props for the EditUserModal component
+ */
 interface EditUserModalProps {
-  open: boolean;
-  user: User;
-  onClose: () => void;
-  onUpdate: (user: User) => Promise<void>;
+  open: boolean; // Controls modal visibility
+  user: User; // The user object to edit
+  onClose: () => void; // Callback when modal is closed
+  onUpdate: (user: User) => Promise<void>; // Callback when user is successfully updated
 }
 
 export default function CrmEditUserModal({
