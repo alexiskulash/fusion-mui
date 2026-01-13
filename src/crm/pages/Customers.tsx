@@ -21,8 +21,22 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 
+/**
+ * Base URL for the Users API
+ * API Documentation: https://user-api.builder-io.workers.dev/api
+ * Endpoints:
+ * - GET /users - List users with pagination and search
+ * - GET /users/:id - Get specific user
+ * - PUT /users/:id - Update user
+ * - DELETE /users/:id - Delete user
+ */
 const API_BASE_URL = "https://user-api.builder-io.workers.dev/api";
 
+/**
+ * User interface matching the API response structure
+ * Represents a complete user object with login credentials, personal info,
+ * location data, and contact information
+ */
 interface User {
   login: {
     uuid: string;
@@ -60,6 +74,10 @@ interface User {
   nat: string;
 }
 
+/**
+ * Form data interface for the edit dialog
+ * Contains only the fields that can be edited by users
+ */
 interface EditFormData {
   firstName: string;
   lastName: string;
@@ -70,18 +88,78 @@ interface EditFormData {
   phone: string;
 }
 
+/**
+ * Customers Page Component
+ * 
+ * Displays a searchable, paginated table of users from the Users API.
+ * Features:
+ * - Server-side pagination
+ * - Search functionality with debouncing
+ * - Edit user via modal dialog
+ * - Delete user with confirmation
+ * - Success/error notifications
+ * 
+ * @returns {JSX.Element} The Customers page with user management table
+ */
 export default function Customers() {
+  // ============================================================================
+  // STATE MANAGEMENT
+  // ============================================================================
+  
+  /**
+   * Array of users fetched from the API
+   * Updated when pagination changes or search is performed
+   */
   const [users, setUsers] = useState<User[]>([]);
+  
+  /**
+   * Loading state for API requests
+   * Shows loading indicator in DataGrid while fetching data
+   */
   const [loading, setLoading] = useState(false);
+  
+  /**
+   * Total number of users available on the server
+   * Used for server-side pagination to calculate total pages
+   */
   const [total, setTotal] = useState(0);
+  
+  /**
+   * Pagination state for DataGrid
+   * Controls current page and number of items per page
+   */
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: 20,
   });
+  
+  /**
+   * Current value of the search input field
+   * Updates immediately as user types
+   */
   const [searchQuery, setSearchQuery] = useState("");
+  
+  /**
+   * Debounced search value
+   * Only updates after 500ms of no typing to reduce API calls
+   */
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  
+  /**
+   * Controls visibility of the edit user dialog
+   */
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  
+  /**
+   * Currently selected user for editing
+   * Null when no user is selected
+   */
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  
+  /**
+   * Form data for the edit dialog
+   * Populated when a user clicks the edit button
+   */
   const [formData, setFormData] = useState<EditFormData>({
     firstName: "",
     lastName: "",
@@ -91,6 +169,11 @@ export default function Customers() {
     country: "",
     phone: "",
   });
+  
+  /**
+   * Snackbar notification state
+   * Used to display success/error messages after operations
+   */
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -101,24 +184,44 @@ export default function Customers() {
     severity: "success",
   });
 
-  // Debounce search input
+  // ============================================================================
+  // EFFECTS
+  // ============================================================================
+  
+  /**
+   * Debounce Effect
+   * Delays the search query update to avoid excessive API calls while typing.
+   * Waits 500ms after the user stops typing before updating debouncedSearch.
+   */
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery);
     }, 500);
 
+    // Cleanup: clear timeout if searchQuery changes before 500ms
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Fetch users from API
+  /**
+   * Fetch Users from API
+   * 
+   * Makes a GET request to /users with pagination and search parameters.
+   * Updates the users list and total count when response is received.
+   * 
+   * Dependencies:
+   * - paginationModel: Refetch when page or pageSize changes
+   * - debouncedSearch: Refetch when search query is updated (after debounce)
+   */
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
+      // Build query parameters for the API request
       const params = new URLSearchParams({
-        page: String(paginationModel.page + 1),
+        page: String(paginationModel.page + 1), // API uses 1-based pagination
         perPage: String(paginationModel.pageSize),
       });
 
+      // Add search parameter if user has entered a search query
       if (debouncedSearch) {
         params.append("search", debouncedSearch);
       }
@@ -126,6 +229,7 @@ export default function Customers() {
       const response = await fetch(`${API_BASE_URL}/users?${params}`);
       const data = await response.json();
 
+      // Update state with fetched data
       setUsers(data.data || []);
       setTotal(data.total || 0);
     } catch (error) {
@@ -140,11 +244,25 @@ export default function Customers() {
     }
   }, [paginationModel, debouncedSearch]);
 
+  /**
+   * Fetch Effect
+   * Triggers fetchUsers whenever pagination or search changes
+   */
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
-  // Handle edit button click
+  // ============================================================================
+  // EVENT HANDLERS
+  // ============================================================================
+  
+  /**
+   * Handle Edit Button Click
+   * 
+   * Opens the edit dialog and populates the form with the selected user's data.
+   * 
+   * @param {User} user - The user object to edit
+   */
   const handleEdit = (user: User) => {
     setSelectedUser(user);
     setFormData({
@@ -159,8 +277,16 @@ export default function Customers() {
     setEditDialogOpen(true);
   };
 
-  // Handle delete
+  /**
+   * Handle Delete User
+   * 
+   * Deletes a user after confirmation. Makes a DELETE request to the API
+   * and refreshes the user list on success.
+   * 
+   * @param {string} userId - UUID of the user to delete
+   */
   const handleDelete = async (userId: string) => {
+    // Confirm deletion with native browser dialog
     if (!confirm("Are you sure you want to delete this user?")) {
       return;
     }
@@ -176,6 +302,7 @@ export default function Customers() {
           message: "User deleted successfully",
           severity: "success",
         });
+        // Refresh the user list to reflect the deletion
         fetchUsers();
       } else {
         throw new Error("Delete failed");
@@ -190,7 +317,12 @@ export default function Customers() {
     }
   };
 
-  // Handle form submit
+  /**
+   * Handle Edit Form Submit
+   * 
+   * Sends a PUT request to update the user's information.
+   * Closes the dialog and refreshes the list on success.
+   */
   const handleSubmit = async () => {
     if (!selectedUser) return;
 
@@ -225,6 +357,7 @@ export default function Customers() {
           severity: "success",
         });
         setEditDialogOpen(false);
+        // Refresh the user list to show updated data
         fetchUsers();
       } else {
         throw new Error("Update failed");
@@ -239,6 +372,14 @@ export default function Customers() {
     }
   };
 
+  // ============================================================================
+  // DATAGRID COLUMN DEFINITIONS
+  // ============================================================================
+  
+  /**
+   * Column definitions for the DataGrid
+   * Defines how each column should be displayed and what data to show
+   */
   const columns: GridColDef[] = [
     {
       field: "picture",
@@ -259,6 +400,7 @@ export default function Customers() {
       headerName: "Name",
       flex: 1,
       minWidth: 150,
+      // Combines first and last name for display
       valueGetter: (value, row) => `${row.name.first} ${row.name.last}`,
     },
     {
@@ -272,6 +414,7 @@ export default function Customers() {
       headerName: "Location",
       flex: 1,
       minWidth: 200,
+      // Formats location as "City, State, Country"
       valueGetter: (value, row) =>
         `${row.location.city}, ${row.location.state}, ${row.location.country}`,
     },
@@ -284,12 +427,14 @@ export default function Customers() {
       field: "age",
       headerName: "Age",
       width: 80,
+      // Extracts age from nested dob object
       valueGetter: (value, row) => row.dob.age,
     },
     {
       field: "gender",
       headerName: "Gender",
       width: 100,
+      // Displays gender as a colored chip
       renderCell: (params) => (
         <Chip
           label={params.value}
@@ -305,6 +450,7 @@ export default function Customers() {
       width: 120,
       sortable: false,
       filterable: false,
+      // Renders edit and delete action buttons
       renderCell: (params) => (
         <Box sx={{ display: "flex", gap: 0.5 }}>
           <IconButton
@@ -328,8 +474,13 @@ export default function Customers() {
     },
   ];
 
+  // ============================================================================
+  // RENDER
+  // ============================================================================
+  
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
+      {/* Page Header */}
       <Typography variant="h4" component="h1" sx={{ mb: 2, fontWeight: 600 }}>
         Customers
       </Typography>
@@ -357,17 +508,17 @@ export default function Customers() {
         />
       </Box>
 
-      {/* Data Grid */}
+      {/* Data Grid - Main users table */}
       <Box sx={{ height: 600, width: "100%" }}>
         <DataGrid
           rows={users}
           columns={columns}
-          getRowId={(row) => row.login.uuid}
+          getRowId={(row) => row.login.uuid} // Use UUID as unique row identifier
           paginationModel={paginationModel}
           onPaginationModelChange={setPaginationModel}
           pageSizeOptions={[10, 20, 50]}
-          rowCount={total}
-          paginationMode="server"
+          rowCount={total} // Total rows for server-side pagination
+          paginationMode="server" // Enable server-side pagination
           loading={loading}
           density="compact"
           disableColumnResize
@@ -382,7 +533,7 @@ export default function Customers() {
         />
       </Box>
 
-      {/* Edit Dialog */}
+      {/* Edit User Dialog */}
       <Dialog
         open={editDialogOpen}
         onClose={() => setEditDialogOpen(false)}
@@ -392,6 +543,7 @@ export default function Customers() {
         <DialogTitle>Edit User</DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 0.5 }}>
+            {/* First Name Field */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -403,6 +555,7 @@ export default function Customers() {
                 required
               />
             </Grid>
+            {/* Last Name Field */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -414,6 +567,7 @@ export default function Customers() {
                 required
               />
             </Grid>
+            {/* Email Field */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -426,6 +580,7 @@ export default function Customers() {
                 required
               />
             </Grid>
+            {/* Phone Field */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -436,6 +591,7 @@ export default function Customers() {
                 }
               />
             </Grid>
+            {/* City Field */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -446,6 +602,7 @@ export default function Customers() {
                 }
               />
             </Grid>
+            {/* State Field */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -456,6 +613,7 @@ export default function Customers() {
                 }
               />
             </Grid>
+            {/* Country Field */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -476,7 +634,7 @@ export default function Customers() {
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar for notifications */}
+      {/* Snackbar for Success/Error Notifications */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={4000}
