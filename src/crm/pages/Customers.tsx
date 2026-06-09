@@ -136,7 +136,7 @@ export default function Customers() {
       <Typography
         variant="h4"
         component="h1"
-        sx={{ py: 2, mb: 1, fontWeight: 400, letterSpacing: "0.25px" }}
+        sx={{ py: 2, mb: 1, fontWeight: 400, letterSpacing: "0.25px", fontFamily: "K2D, sans-serif" }}
       >
         User management
       </Typography>
